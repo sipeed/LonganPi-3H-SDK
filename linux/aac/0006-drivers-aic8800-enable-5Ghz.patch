@@ -1,0 +1,25 @@
+From 2246969320d8ad11b87ef1eab0b936a33c7ce27d Mon Sep 17 00:00:00 2001
+From: Lu Hui <luhui@sipeed.com>
+Date: Tue, 7 Nov 2023 15:54:43 +0800
+Subject: [PATCH 06/13] drivers: aic8800: enable 5Ghz
+
+---
+ drivers/net/wireless/aic8800/aic8800_fdrv/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/aic8800/aic8800_fdrv/Makefile b/drivers/net/wireless/aic8800/aic8800_fdrv/Makefile
+index e5a7236521ff..c39461efb738 100644
+--- a/drivers/net/wireless/aic8800/aic8800_fdrv/Makefile
++++ b/drivers/net/wireless/aic8800/aic8800_fdrv/Makefile
+@@ -60,7 +60,7 @@ CONFIG_SDIO_SUPPORT =n
+ CONFIG_USB_SUPPORT =y
+ CONFIG_RX_REORDER ?=y
+ CONFIG_ARP_OFFLOAD =y
+-CONFIG_USE_5G ?= n
++CONFIG_USE_5G ?= y
+ CONFIG_RADAR_OR_IR_DETECT =n
+ CONFIG_DOWNLOAD_FW =n
+ CONFIG_RFTEST=y
+-- 
+2.34.1
+

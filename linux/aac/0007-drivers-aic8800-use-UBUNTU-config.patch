@@ -1,0 +1,29 @@
+From 53e729b9b0edca8b4a481b262b76b95fc2105144 Mon Sep 17 00:00:00 2001
+From: Lu Hui <luhui@sipeed.com>
+Date: Tue, 7 Nov 2023 16:01:01 +0800
+Subject: [PATCH 07/13] drivers: aic8800: use UBUNTU config
+
+---
+ drivers/net/wireless/aic8800/aic_load_fw/Makefile | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/wireless/aic8800/aic_load_fw/Makefile b/drivers/net/wireless/aic8800/aic_load_fw/Makefile
+index 330dc34565ee..6a94b3c5efde 100644
+--- a/drivers/net/wireless/aic8800/aic_load_fw/Makefile
++++ b/drivers/net/wireless/aic8800/aic_load_fw/Makefile
+@@ -11,10 +11,10 @@ CONFIG_PREALLOC_RX_SKB = n
+ CONFIG_PREALLOC_TXQ = y
+ 
+ # Platform support list
+-CONFIG_PLATFORM_ROCKCHIP ?= y
++CONFIG_PLATFORM_ROCKCHIP ?= n
+ CONFIG_PLATFORM_ALLWINNER ?= n
+ CONFIG_PLATFORM_AMLOGIC ?= n
+-CONFIG_PLATFORM_UBUNTU ?= n
++CONFIG_PLATFORM_UBUNTU ?= y
+ 
+ CONFIG_AIC_LOADFW_SUPPORT = m
+ MODULE_NAME = aic_load_fw
+-- 
+2.34.1
+
