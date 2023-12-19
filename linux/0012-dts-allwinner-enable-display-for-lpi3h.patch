@@ -1,7 +1,7 @@
-From 45226908e619ffe5adcdb07a4d95fe58a8800a39 Mon Sep 17 00:00:00 2001
+From 5bdc5e57b50e8b32551a0555b866a11bff9dfb41 Mon Sep 17 00:00:00 2001
 From: Jisheng Zhang <jszhang@kernel.org>
 Date: Fri, 10 Nov 2023 10:57:09 +0800
-Subject: [PATCH 3/4] dts: allwinner: enable display for lpi3h
+Subject: [PATCH 12/28] dts: allwinner: enable display for lpi3h
 
 Change-Id: I6337460b39e33b3cd62bfebf5571af55d22b9342
 ---
@@ -311,5 +311,5 @@ index 245583881549..f4e8391efffe 100644
  	ext_rgmii_phy: ethernet-phy@1 {
  		compatible = "ethernet-phy-ieee802.3-c22";
 -- 
-2.42.0
+2.34.1
 

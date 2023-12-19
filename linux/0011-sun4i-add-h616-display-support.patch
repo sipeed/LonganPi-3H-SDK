@@ -1,7 +1,7 @@
-From 7b92f77eb6345f3ed03a9095ad72fbb44bb3e8ba Mon Sep 17 00:00:00 2001
+From f283354fd3fc4aed964a5a097ca008e5b89da7de Mon Sep 17 00:00:00 2001
 From: orangepi-xunlong <258384131@qq.com>
 Date: Mon, 5 Jun 2023 14:16:04 +0800
-Subject: [PATCH 2/4] sun4i: add h616 display support
+Subject: [PATCH 11/28] sun4i: add h616 display support
 
 From linux-orangepi
 ---
@@ -770,5 +770,5 @@ index 7ba75011adf9..3f7afa8d37c5 100644
  		       DE3_VI_SCALER_UNIT_SIZE * channel;
  	else
 -- 
-2.42.0
+2.34.1
 

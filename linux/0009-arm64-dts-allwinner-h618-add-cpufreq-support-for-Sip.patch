@@ -1,7 +1,7 @@
-From 8884bf39797eaaf8c21640b7f1a46866afeeba4b Mon Sep 17 00:00:00 2001
+From 96be1244fa38fe868930a87a46f99288370bf883 Mon Sep 17 00:00:00 2001
 From: Jisheng Zhang <jszhang@kernel.org>
 Date: Fri, 3 Nov 2023 03:30:01 +0800
-Subject: [PATCH 8/8] arm64: dts: allwinner: h618: add cpufreq support for
+Subject: [PATCH 09/28] arm64: dts: allwinner: h618: add cpufreq support for
  Sipeed Longan SoM 3H
 
 ---
@@ -31,5 +31,5 @@ index 88a7d287b73c..45cb11275a23 100644
  	pinctrl-names = "default";
  	pinctrl-0 = <&mmc2_pins>;
 -- 
-2.40.1
+2.34.1
 

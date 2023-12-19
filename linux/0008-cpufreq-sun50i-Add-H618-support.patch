@@ -1,7 +1,7 @@
-From cdce2c985e64ea0f463c5f9f2c08585cc21e9548 Mon Sep 17 00:00:00 2001
+From 50f282a653667d06be210e4a29567adddb58d736 Mon Sep 17 00:00:00 2001
 From: Jisheng Zhang <jszhang@kernel.org>
 Date: Fri, 3 Nov 2023 03:28:47 +0800
-Subject: [PATCH 7/8] cpufreq: sun50i: Add H618 support
+Subject: [PATCH 08/28] cpufreq: sun50i: Add H618 support
 
 Use H616 support.
 ---
@@ -21,5 +21,5 @@ index 77fc1f2658e0..0def1ea53726 100644
  };
  MODULE_DEVICE_TABLE(of, sun50i_cpufreq_match_list);
 -- 
-2.40.1
+2.34.1
 

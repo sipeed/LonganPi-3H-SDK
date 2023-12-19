@@ -1,7 +1,7 @@
-From 2e115a9bac3e3650a4527c47993686f8f8b89051 Mon Sep 17 00:00:00 2001
+From 6fd3cce2facdc732fe4108e55a16b3cbe6073a67 Mon Sep 17 00:00:00 2001
 From: Tiandi Zhou <zhoutiandi@sipeed.com>
 Date: Fri, 1 Dec 2023 02:55:01 +0000
-Subject: [PATCH 02/13] longanpi_3h_defconfig: enable cgroup & namespace
+Subject: [PATCH 15/28] longanpi_3h_defconfig: enable cgroup & namespace
 
 ---
  arch/arm64/configs/longanpi_3h_defconfig | 24 ++++++++++++------------

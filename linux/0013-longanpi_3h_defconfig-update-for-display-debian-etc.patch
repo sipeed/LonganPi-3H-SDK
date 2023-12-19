@@ -1,7 +1,7 @@
-From 803a82c0962ab11a242f26abe943462fd3ba4ad5 Mon Sep 17 00:00:00 2001
+From 3828679575daced0f143a45ec07ff41de9be3a65 Mon Sep 17 00:00:00 2001
 From: Jisheng Zhang <jszhang@kernel.org>
 Date: Fri, 10 Nov 2023 11:26:40 +0800
-Subject: [PATCH 4/4] longanpi_3h_defconfig: update for display, debian etc.
+Subject: [PATCH 13/28] longanpi_3h_defconfig: update for display, debian etc.
 
 Change-Id: Icc702e1fb131dffc9a12bbad2c7d63a1705acbfa
 ---
@@ -633,5 +633,5 @@ index 9d28a94ce4bd..abbaad493f69 100644
  #
  # Lock Debugging (spinlocks, mutexes, etc...)
 -- 
-2.42.0
+2.34.1
 

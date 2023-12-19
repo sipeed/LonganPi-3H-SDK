@@ -1,7 +1,7 @@
-From 695c1723c18ddb9c4a077db320b58588e09bbe27 Mon Sep 17 00:00:00 2001
+From 55517b8f04f8d46552f29c5f4bb4d261ed9da172 Mon Sep 17 00:00:00 2001
 From: Martin Botka <martin.botka@somainline.org>
 Date: Mon, 4 Sep 2023 17:57:01 +0200
-Subject: [PATCH 2/8] firmware: smccc: Export revision soc_id function
+Subject: [PATCH 03/28] firmware: smccc: Export revision soc_id function
 
 arm_smccc_get_soc_id_revision need to be exported so it can be used
 by sun50i cpufreq driver.
@@ -24,5 +24,5 @@ index db818f9dcb8e..d670635914ec 100644
  static int __init smccc_devices_init(void)
  {
 -- 
-2.40.1
+2.34.1
 

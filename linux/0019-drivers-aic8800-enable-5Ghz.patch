@@ -1,7 +1,7 @@
-From 2246969320d8ad11b87ef1eab0b936a33c7ce27d Mon Sep 17 00:00:00 2001
+From c86ca4dfdf23eb38bb4302d64634b0cbfa9a1f18 Mon Sep 17 00:00:00 2001
 From: Lu Hui <luhui@sipeed.com>
 Date: Tue, 7 Nov 2023 15:54:43 +0800
-Subject: [PATCH 06/13] drivers: aic8800: enable 5Ghz
+Subject: [PATCH 19/28] drivers: aic8800: enable 5Ghz
 
 ---
  drivers/net/wireless/aic8800/aic8800_fdrv/Makefile | 2 +-
