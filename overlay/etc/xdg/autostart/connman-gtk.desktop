@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Exec= sh -c '/usr/bin/connman-gtk --tray'
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Name=Connman GTK
+Comment=Connman GTK autostart
