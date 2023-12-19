@@ -39,3 +39,6 @@ dpkg-reconfigure openssh-server
 # enable rc-local service
 systemctl enable rc-local
 
+# change the timezone
+timedatectl set-timezone Asia/Shanghai
+
