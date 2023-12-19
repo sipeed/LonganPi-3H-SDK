@@ -23,9 +23,10 @@ deb https://mirrors.bfsu.edu.cn/debian-security/ testing-security main contrib n
 	ethtool ckermit lrzsz minicom picocom btop neofetch iotop htop \
 	bmon e2fsprogs nvi tcpdump alsa-utils squashfs-tools evtest \
 	bluez bluez-hcidump bluez-tools btscanner bluez-alsa-utils \
-	device-tree-compiler debian-archive-keyring connman-gtk \
-	linux-cpupower task-xfce-desktop xfce4-terminal xfce4-power-manager \ 
-	xfce4-goodies pulseaudio-module-bluetooth xfce4-screenshooter blueman" > ./build/rootfs.tar
+	device-tree-compiler debian-archive-keyring connman-gtk chromium\
+	linux-cpupower task-xfce-desktop xfce4-terminal xfce4-screenshooter \
+	pulseaudio-module-bluetooth blueman fonts-noto-core fonts-noto-cjk \
+	fonts-noto-mono fonts-noto-ui-core tango-icon-theme" > ./build/rootfs.tar
 }
 
 # if you want skip debian rootfs build, please comment this line:
