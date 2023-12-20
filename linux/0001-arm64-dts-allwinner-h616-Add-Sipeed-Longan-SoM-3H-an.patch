@@ -1,7 +1,7 @@
-From bd105048ff9ca55ce2cf0452fa7e7c4c6a275adc Mon Sep 17 00:00:00 2001
+From e581cde4780115fa512ee0f7472c4f98a49be09b Mon Sep 17 00:00:00 2001
 From: Jisheng Zhang <jszhang@kernel.org>
 Date: Tue, 17 Oct 2023 17:42:08 +0800
-Subject: [PATCH 01/28] arm64: dts: allwinner: h616: Add Sipeed Longan SoM 3H
+Subject: [PATCH 01/29] arm64: dts: allwinner: h616: Add Sipeed Longan SoM 3H
  and Pi 3H board support
 
 The Sipeed Longan SoM 3H is a system on module based on the Allwinner

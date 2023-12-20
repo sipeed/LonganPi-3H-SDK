@@ -1,7 +1,7 @@
-From 394e7b543445ccdf714979fb0c1461457597da25 Mon Sep 17 00:00:00 2001
+From 7adbaacd7074986b5f5f83cfda806e7be0fac329 Mon Sep 17 00:00:00 2001
 From: Martin Botka <martin.botka@somainline.org>
 Date: Mon, 4 Sep 2023 17:57:05 +0200
-Subject: [PATCH 06/28] arm64: dts: allwinner: h616: Add CPU Operating
+Subject: [PATCH 06/29] arm64: dts: allwinner: h616: Add CPU Operating
  Performance Points table
 
 Add an Operating Performance Points table for the CPU cores to

@@ -1,7 +1,7 @@
-From 536ab5ec6c4aa7edc877f73449a2c568ebfb2aba Mon Sep 17 00:00:00 2001
+From e0168918a3088ed20dbd1d817351ab822a1be88c Mon Sep 17 00:00:00 2001
 From: Jisheng Zhang <jszhang@kernel.org>
 Date: Fri, 3 Nov 2023 03:27:35 +0800
-Subject: [PATCH 07/28] cpufreq: dt-platdev: Blocklist allwinner,h618 SoC
+Subject: [PATCH 07/29] cpufreq: dt-platdev: Blocklist allwinner,h618 SoC
 
 The AllWinner H618 uses H6 cpufreq driver.
 Add it to blocklist so its not created twice

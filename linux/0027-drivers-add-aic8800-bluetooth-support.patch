@@ -1,7 +1,7 @@
-From 48bb3fa8e621d34238e82c68ecc99a87062ca919 Mon Sep 17 00:00:00 2001
-From: wu-yue-yu <ztd1217@qq.com>
+From a72c15dad856ad88892f1d0d99702a2555100fbe Mon Sep 17 00:00:00 2001
+From: Tiandi Zhou <zhoutiandi@sipeed.com>
 Date: Tue, 19 Dec 2023 15:59:36 +0800
-Subject: [PATCH 27/28] drivers: add aic8800 bluetooth support
+Subject: [PATCH 27/29] drivers: add aic8800 bluetooth support
 
 ---
  drivers/bluetooth/Kconfig     |    6 +
@@ -43,7 +43,7 @@ index 7a5967e9ac48..11a74bc8e6c2 100644
  obj-$(CONFIG_BT_ATH3K)		+= ath3k.o
 diff --git a/drivers/bluetooth/aic_btusb.c b/drivers/bluetooth/aic_btusb.c
 new file mode 100755
-index 000000000000..f0c12a975a20
+index 000000000000..119eef726e2b
 --- /dev/null
 +++ b/drivers/bluetooth/aic_btusb.c
 @@ -0,0 +1,5008 @@
@@ -5057,7 +5057,7 @@ index 000000000000..f0c12a975a20
 +MODULE_LICENSE("GPL");
 diff --git a/drivers/bluetooth/aic_btusb.h b/drivers/bluetooth/aic_btusb.h
 new file mode 100755
-index 000000000000..55c754ad4b46
+index 000000000000..4c212acd5003
 --- /dev/null
 +++ b/drivers/bluetooth/aic_btusb.h
 @@ -0,0 +1,751 @@

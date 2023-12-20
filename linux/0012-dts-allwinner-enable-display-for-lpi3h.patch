@@ -1,7 +1,7 @@
-From 5bdc5e57b50e8b32551a0555b866a11bff9dfb41 Mon Sep 17 00:00:00 2001
+From 978d832858eb1e16c01023dc11304eefd0795de3 Mon Sep 17 00:00:00 2001
 From: Jisheng Zhang <jszhang@kernel.org>
 Date: Fri, 10 Nov 2023 10:57:09 +0800
-Subject: [PATCH 12/28] dts: allwinner: enable display for lpi3h
+Subject: [PATCH 12/29] dts: allwinner: enable display for lpi3h
 
 Change-Id: I6337460b39e33b3cd62bfebf5571af55d22b9342
 ---

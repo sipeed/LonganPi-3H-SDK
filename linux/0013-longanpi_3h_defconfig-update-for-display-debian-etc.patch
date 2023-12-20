@@ -1,7 +1,7 @@
-From 3828679575daced0f143a45ec07ff41de9be3a65 Mon Sep 17 00:00:00 2001
+From cc0cc2e3b8758c879ac29c48b0eb8356f7cda3e4 Mon Sep 17 00:00:00 2001
 From: Jisheng Zhang <jszhang@kernel.org>
 Date: Fri, 10 Nov 2023 11:26:40 +0800
-Subject: [PATCH 13/28] longanpi_3h_defconfig: update for display, debian etc.
+Subject: [PATCH 13/29] longanpi_3h_defconfig: update for display, debian etc.
 
 Change-Id: Icc702e1fb131dffc9a12bbad2c7d63a1705acbfa
 ---

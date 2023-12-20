@@ -1,7 +1,7 @@
-From 05e5e6fee3ecaa609a8096b5745d1fc1a184f97d Mon Sep 17 00:00:00 2001
+From 06f95fcd2b54e0d58b5454634ed968d06cc29375 Mon Sep 17 00:00:00 2001
 From: Lu Hui <luhui@sipeed.com>
 Date: Tue, 7 Nov 2023 16:25:06 +0800
-Subject: [PATCH 22/28] longanpi_3h_defconfig: enable tcp cong
+Subject: [PATCH 22/29] longanpi_3h_defconfig: enable tcp cong
 
 ---
  arch/arm64/configs/longanpi_3h_defconfig | 2 +-
