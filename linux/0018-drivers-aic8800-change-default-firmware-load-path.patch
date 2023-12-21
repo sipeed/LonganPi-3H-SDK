@@ -1,0 +1,25 @@
+From 9c3227a00fa68d4730134015f99917b3ee229770 Mon Sep 17 00:00:00 2001
+From: Lu Hui <luhui@sipeed.com>
+Date: Tue, 7 Nov 2023 15:54:03 +0800
+Subject: [PATCH 18/29] drivers: aic8800: change default firmware load path
+
+---
+ drivers/net/wireless/aic8800/aic8800_fdrv/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/aic8800/aic8800_fdrv/Makefile b/drivers/net/wireless/aic8800/aic8800_fdrv/Makefile
+index 56de2e402a52..e5a7236521ff 100644
+--- a/drivers/net/wireless/aic8800/aic8800_fdrv/Makefile
++++ b/drivers/net/wireless/aic8800/aic8800_fdrv/Makefile
+@@ -29,7 +29,7 @@ CONFIG_RWNX_FHOST ?= n
+ #
+ # DEBUG OPTIONS
+ CONFIG_RWNX_UM_HELPER_DFLT ?= "/dini/dini_bin/rwnx_umh.sh"
+-CONFIG_AIC_FW_PATH = "/vendor/etc/firmware"
++CONFIG_AIC_FW_PATH = "/usr/lib/firmware"
+ export CONFIG_AIC_FW_PATH
+ 
+ #
+-- 
+2.34.1
+

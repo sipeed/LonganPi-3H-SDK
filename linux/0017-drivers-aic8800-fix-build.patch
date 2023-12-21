@@ -1,0 +1,171 @@
+From 4f68e2e7d18b3636d71007898330f2305aff94b0 Mon Sep 17 00:00:00 2001
+From: Lu Hui <luhui@sipeed.com>
+Date: Tue, 7 Nov 2023 15:07:19 +0800
+Subject: [PATCH 17/29] drivers: aic8800: fix build
+
+---
+ drivers/net/wireless/Kconfig                  |  1 +
+ drivers/net/wireless/Makefile                 |  1 +
+ .../wireless/aic8800/aic8800_fdrv/rwnx_main.c | 27 ++++++++++++++-----
+ .../aic8800/aic8800_fdrv/rwnx_mod_params.c    |  4 +++
+ .../wireless/aic8800/aic8800_fdrv/rwnx_rx.c   |  6 +++++
+ .../aic8800/aic_load_fw/aicbluetooth_cmds.c   |  3 ++-
+ 6 files changed, 35 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/net/wireless/Kconfig b/drivers/net/wireless/Kconfig
+index 7555af5195ec..789593ea207b 100644
+--- a/drivers/net/wireless/Kconfig
++++ b/drivers/net/wireless/Kconfig
+@@ -37,6 +37,7 @@ source "drivers/net/wireless/st/Kconfig"
+ source "drivers/net/wireless/ti/Kconfig"
+ source "drivers/net/wireless/zydas/Kconfig"
+ source "drivers/net/wireless/quantenna/Kconfig"
++source "drivers/net/wireless/aic8800/Kconfig"
+ 
+ source "drivers/net/wireless/legacy/Kconfig"
+ 
+diff --git a/drivers/net/wireless/Makefile b/drivers/net/wireless/Makefile
+index 4d7374d567d1..1ac21828740d 100644
+--- a/drivers/net/wireless/Makefile
++++ b/drivers/net/wireless/Makefile
+@@ -22,6 +22,7 @@ obj-$(CONFIG_WLAN_VENDOR_SILABS) += silabs/
+ obj-$(CONFIG_WLAN_VENDOR_ST) += st/
+ obj-$(CONFIG_WLAN_VENDOR_TI) += ti/
+ obj-$(CONFIG_WLAN_VENDOR_ZYDAS) += zydas/
++obj-$(CONFIG_AIC_WLAN_SUPPORT) += aic8800/
+ 
+ obj-$(CONFIG_WLAN) += legacy/
+ obj-$(CONFIG_WLAN) += virtual/
+diff --git a/drivers/net/wireless/aic8800/aic8800_fdrv/rwnx_main.c b/drivers/net/wireless/aic8800/aic8800_fdrv/rwnx_main.c
+index ad2b2ce3c430..c9efdbca4c84 100644
+--- a/drivers/net/wireless/aic8800/aic8800_fdrv/rwnx_main.c
++++ b/drivers/net/wireless/aic8800/aic8800_fdrv/rwnx_main.c
+@@ -185,7 +185,7 @@
+ #ifdef ANDROID_PLATFORM
+ #define HIGH_KERNEL_VERSION KERNEL_VERSION(5, 15, 41)
+ #else
+-#define HIGH_KERNEL_VERSION KERNEL_VERSION(6, 0, 0)
++#define HIGH_KERNEL_VERSION KERNEL_VERSION(6, 5, 0)
+ #endif
+ 
+ 
+@@ -1064,7 +1064,11 @@ static void rwnx_csa_finish(struct work_struct *ws)
+         cfg80211_disconnected(vif->ndev, 0, NULL, 0, 0, GFP_KERNEL);
+         #endif
+     } else {
++#if (LINUX_VERSION_CODE >= HIGH_KERNEL_VERSION)
++	wiphy_lock(vif->wdev.wiphy);
++#else
+         mutex_lock(&vif->wdev.mtx);
++#endif
+         __acquire(&vif->wdev.mtx);
+         spin_lock_bh(&rwnx_hw->cb_lock);
+         rwnx_chanctx_unlink(vif);
+@@ -1076,13 +1080,14 @@ static void rwnx_csa_finish(struct work_struct *ws)
+             rwnx_txq_vif_stop(vif, RWNX_TXQ_STOP_CHAN, rwnx_hw);
+         spin_unlock_bh(&rwnx_hw->cb_lock);
+ #if (LINUX_VERSION_CODE >= HIGH_KERNEL_VERSION)
+-                cfg80211_ch_switch_notify(vif->ndev, &csa->chandef, 0);
++                cfg80211_ch_switch_notify(vif->ndev, &csa->chandef, 0, 0);
++		wiphy_unlock(vif->wdev.wiphy);
+ #else
+                 cfg80211_ch_switch_notify(vif->ndev, &csa->chandef);
++                mutex_unlock(&vif->wdev.mtx);
++                __release(&vif->wdev.mtx);
+ #endif
+ 
+-        mutex_unlock(&vif->wdev.mtx);
+-        __release(&vif->wdev.mtx);
+     }
+     rwnx_del_csa(vif);
+ }
+@@ -3102,7 +3107,8 @@ static struct rwnx_vif *rwnx_interface_add(struct rwnx_hw *rwnx_hw,
+     }
+     else {
+         memcpy(ndev->dev_addr, rwnx_hw->wiphy->perm_addr, ETH_ALEN);
+-        ndev->dev_addr[5] ^= vif_idx;
++        //ndev->dev_addr[5] ^= vif_idx;
++	vif->wdev.address[5] ^= vif_idx;
+         memcpy(vif->wdev.address, ndev->dev_addr, ETH_ALEN);
+     }
+ 
+@@ -4910,9 +4916,18 @@ static int rwnx_cfg80211_start_ap(struct wiphy *wiphy, struct net_device *dev,
+  * @change_beacon: Change the beacon parameters for an access point mode
+  *	interface. This should reject the call when AP mode wasn't started.
+  */
++// for mainline linux 
++#if (LINUX_VERSION_CODE >= HIGH_KERNEL_VERSION)
++static int rwnx_cfg80211_change_beacon(struct wiphy *wiphy, struct net_device *dev,
++                                       struct cfg80211_ap_update *params)
++#else
+ static int rwnx_cfg80211_change_beacon(struct wiphy *wiphy, struct net_device *dev,
+                                        struct cfg80211_beacon_data *info)
++#endif
+ {
++#if (LINUX_VERSION_CODE >= HIGH_KERNEL_VERSION)
++    struct cfg80211_beacon_data *info = &params->beacon;
++#endif
+     struct rwnx_hw *rwnx_hw = wiphy_priv(wiphy);
+     struct rwnx_vif *vif = netdev_priv(dev);
+     struct rwnx_bcn *bcn = &vif->ap.bcn;
+@@ -5841,7 +5856,7 @@ int rwnx_cfg80211_channel_switch(struct wiphy *wiphy,
+         INIT_WORK(&csa->work, rwnx_csa_finish);
+ 
+ #if LINUX_VERSION_CODE >= HIGH_KERNEL_VERSION
+-        cfg80211_ch_switch_started_notify(dev, &csa->chandef, 0, params->count, false);
++        cfg80211_ch_switch_started_notify(dev, &csa->chandef, 0, params->count, false, 0);
+ #elif LINUX_VERSION_CODE >= KERNEL_VERSION(5, 11, 0)
+         cfg80211_ch_switch_started_notify(dev, &csa->chandef, params->count, params->block_tx);
+ #else
+diff --git a/drivers/net/wireless/aic8800/aic8800_fdrv/rwnx_mod_params.c b/drivers/net/wireless/aic8800/aic8800_fdrv/rwnx_mod_params.c
+index 2ae6e8e08e08..5e160c13b5bc 100644
+--- a/drivers/net/wireless/aic8800/aic8800_fdrv/rwnx_mod_params.c
++++ b/drivers/net/wireless/aic8800/aic8800_fdrv/rwnx_mod_params.c
+@@ -1729,7 +1729,11 @@ void rwnx_custregd(struct rwnx_hw *rwnx_hw, struct wiphy *wiphy)
+ // registration (in rwnx_set_wiphy_params()), so nothing has to be done here
+ 
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 0, 0)
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 4, 0)
++    // nop
++#else
+     wiphy->regulatory_flags |= REGULATORY_IGNORE_STALE_KICKOFF;
++#endif
+     wiphy->regulatory_flags |= REGULATORY_WIPHY_SELF_MANAGED;
+ 
+     if (!rwnx_hw->mod_params->custregd)
+diff --git a/drivers/net/wireless/aic8800/aic8800_fdrv/rwnx_rx.c b/drivers/net/wireless/aic8800/aic8800_fdrv/rwnx_rx.c
+index 59007d908480..b3e0a80649ea 100644
+--- a/drivers/net/wireless/aic8800/aic8800_fdrv/rwnx_rx.c
++++ b/drivers/net/wireless/aic8800/aic8800_fdrv/rwnx_rx.c
+@@ -458,8 +458,14 @@ static bool rwnx_rx_data_skb(struct rwnx_hw *rwnx_hw, struct rwnx_vif *rwnx_vif,
+ 
+     if (amsdu) {
+         int count;
++#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 2, 0)
+         ieee80211_amsdu_to_8023s(skb, &list, rwnx_vif->ndev->dev_addr,
+                                  RWNX_VIF_TYPE(rwnx_vif), 0, NULL, NULL);
++#else
++	// for mainline linux commit 986e43b19ae9176093da35e0a844e65c8bf9ede7
++        ieee80211_amsdu_to_8023s(skb, &list, rwnx_vif->ndev->dev_addr,
++                                 RWNX_VIF_TYPE(rwnx_vif), 0, NULL, NULL, false);
++#endif
+ 
+         count = skb_queue_len(&list);
+         if (count > ARRAY_SIZE(rwnx_hw->stats.amsdus_rx))
+diff --git a/drivers/net/wireless/aic8800/aic_load_fw/aicbluetooth_cmds.c b/drivers/net/wireless/aic8800/aic_load_fw/aicbluetooth_cmds.c
+index da9101aef893..b18ae9db7404 100644
+--- a/drivers/net/wireless/aic8800/aic_load_fw/aicbluetooth_cmds.c
++++ b/drivers/net/wireless/aic8800/aic_load_fw/aicbluetooth_cmds.c
+@@ -12,7 +12,8 @@
+  */
+ 
+ #include <linux/list.h>
+-#include <stddef.h>
++// kernel not need include this header
++//#include <stddef.h>
+ #include "aicbluetooth_cmds.h"
+ #include "aic_txrxif.h"
+ #include "aicwf_usb.h"
+-- 
+2.34.1
+

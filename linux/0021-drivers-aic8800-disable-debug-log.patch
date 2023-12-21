@@ -1,0 +1,25 @@
+From 1722f99d9dcbe679f486661c428d6845005c0117 Mon Sep 17 00:00:00 2001
+From: Lu Hui <luhui@sipeed.com>
+Date: Tue, 7 Nov 2023 16:05:14 +0800
+Subject: [PATCH 21/29] drivers: aic8800: disable debug log
+
+---
+ drivers/net/wireless/aic8800/aic8800_fdrv/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/aic8800/aic8800_fdrv/Makefile b/drivers/net/wireless/aic8800/aic8800_fdrv/Makefile
+index c39461efb738..1ae275d8928d 100644
+--- a/drivers/net/wireless/aic8800/aic8800_fdrv/Makefile
++++ b/drivers/net/wireless/aic8800/aic8800_fdrv/Makefile
+@@ -130,7 +130,7 @@ CONFIG_RWNX_MON_RXFILTER ?= n
+ 
+ # extra DEBUG config
+ CONFIG_RWNX_SW_PROFILING ?= n
+-CONFIG_RWNX_DBG ?= y
++CONFIG_RWNX_DBG ?= n
+ BR_NAME = br0
+ 
+ obj-$(CONFIG_AIC8800_WLAN_SUPPORT) := $(MODULE_NAME).o
+-- 
+2.34.1
+

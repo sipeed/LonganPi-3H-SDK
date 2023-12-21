@@ -1,0 +1,28 @@
+From b6c1a9d84c2fdc5928559eb2022da010174d2bf1 Mon Sep 17 00:00:00 2001
+From: Martin Botka <martin.botka@somainline.org>
+Date: Mon, 4 Sep 2023 17:57:02 +0200
+Subject: [PATCH 04/29] cpufreq: dt-platdev: Blocklist allwinner,h616 SoC
+
+The AllWinner H616 uses H6 cpufreq driver.
+Add it to blocklist so its not created twice
+
+Signed-off-by: Martin Botka <martin.botka@somainline.org>
+---
+ drivers/cpufreq/cpufreq-dt-platdev.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/cpufreq/cpufreq-dt-platdev.c b/drivers/cpufreq/cpufreq-dt-platdev.c
+index bd1e1357cef8..1cab455c0aaf 100644
+--- a/drivers/cpufreq/cpufreq-dt-platdev.c
++++ b/drivers/cpufreq/cpufreq-dt-platdev.c
+@@ -104,6 +104,7 @@ static const struct of_device_id allowlist[] __initconst = {
+  */
+ static const struct of_device_id blocklist[] __initconst = {
+ 	{ .compatible = "allwinner,sun50i-h6", },
++	{ .compatible = "allwinner,sun50i-h616", },
+ 
+ 	{ .compatible = "apple,arm-platform", },
+ 
+-- 
+2.34.1
+

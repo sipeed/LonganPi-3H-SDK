@@ -1,0 +1,25 @@
+From c9765f8fbc54e5c8e03e7b063824c6d0eb737dfe Mon Sep 17 00:00:00 2001
+From: Tiandi Zhou <zhoutiandi@sipeed.com>
+Date: Wed, 20 Dec 2023 14:09:31 +0800
+Subject: [PATCH 29/29] drivers: fix aic8800 bluetooth build
+
+---
+ drivers/bluetooth/aic_btusb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/bluetooth/aic_btusb.c b/drivers/bluetooth/aic_btusb.c
+index 119eef726e2b..754c2aef8adc 100755
+--- a/drivers/bluetooth/aic_btusb.c
++++ b/drivers/bluetooth/aic_btusb.c
+@@ -1477,7 +1477,7 @@ static int btchr_init(void)
+     init_waitqueue_head(&btchr_read_wait);
+     init_waitqueue_head(&bt_dlfw_wait);
+ 
+-    bt_char_class = class_create(THIS_MODULE, BT_CHAR_DEVICE_NAME);
++    bt_char_class = class_create(BT_CHAR_DEVICE_NAME);
+     if (IS_ERR(bt_char_class)) {
+         AICBT_ERR("Failed to create bt char class");
+         return PTR_ERR(bt_char_class);
+-- 
+2.34.1
+

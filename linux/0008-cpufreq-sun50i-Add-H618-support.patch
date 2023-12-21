@@ -1,0 +1,25 @@
+From d63a5486ee433a258a7d3ad02e7e2a85b6ebc6ec Mon Sep 17 00:00:00 2001
+From: Jisheng Zhang <jszhang@kernel.org>
+Date: Fri, 3 Nov 2023 03:28:47 +0800
+Subject: [PATCH 08/29] cpufreq: sun50i: Add H618 support
+
+Use H616 support.
+---
+ drivers/cpufreq/sun50i-cpufreq-nvmem.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/cpufreq/sun50i-cpufreq-nvmem.c b/drivers/cpufreq/sun50i-cpufreq-nvmem.c
+index 77fc1f2658e0..0def1ea53726 100644
+--- a/drivers/cpufreq/sun50i-cpufreq-nvmem.c
++++ b/drivers/cpufreq/sun50i-cpufreq-nvmem.c
+@@ -265,6 +265,7 @@ static const struct sunxi_cpufreq_soc_data sun50i_h6_data = {
+ static const struct of_device_id sun50i_cpufreq_match_list[] = {
+ 	{ .compatible = "allwinner,sun50i-h6", .data = &sun50i_h6_data },
+ 	{ .compatible = "allwinner,sun50i-h616", .data = &sun50i_h616_data },
++	{ .compatible = "allwinner,sun50i-h618", .data = &sun50i_h616_data },
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(of, sun50i_cpufreq_match_list);
+-- 
+2.34.1
+
