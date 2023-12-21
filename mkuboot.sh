@@ -26,7 +26,7 @@ then
 	git checkout da2e3196e4dc28298b58a018ace07f85eecd1652
 	find ../../uboot/ -name *.patch | sort | while read line
 	do
-		patch -p1 < $line
+		git am < $line
 	done
 	cd ../../
 fi

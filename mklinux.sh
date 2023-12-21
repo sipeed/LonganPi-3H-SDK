@@ -31,7 +31,7 @@ then
 	git checkout 3b47bc037bd44f142ac09848e8d3ecccc726be99
 	find ../../linux/ -name *.patch | sort | while read line
 	do
-		patch -p1 < $line
+		git am < $line
 	done
 	cd ../../
 fi
