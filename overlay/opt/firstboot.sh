@@ -42,3 +42,8 @@ systemctl enable rc-local
 # change the timezone
 timedatectl set-timezone Asia/Shanghai
 
+# enable wifi/bt/eth
+connmanctl enable bluetooth
+connmanctl enable wifi
+connmanctl enable ethernet
+
