@@ -1,7 +1,7 @@
-From 7cda1ec0797cdc66054eb0cdb4859dd26568cfb7 Mon Sep 17 00:00:00 2001
+From e45cc718629ee8632c0188100813e0895e6274f3 Mon Sep 17 00:00:00 2001
 From: iuncuim <iuncuim@gmail.com>
 Date: Mon, 16 Oct 2023 08:34:41 +0300
-Subject: [PATCH 5/6] sunxi: H616: add LPDDR4 DRAM support
+Subject: [PATCH 5/7] sunxi: H616: add LPDDR4 DRAM support
 
 The H616 SoC family has support for several types of DRAM: DDR3,
 LPDDR3, DDR4 and LPDDR4.
@@ -45,7 +45,7 @@ index 11774deded..a8fdda124a 100644
  	u32 tpr11;
  	u32 tpr12;
 diff --git a/arch/arm/mach-sunxi/Kconfig b/arch/arm/mach-sunxi/Kconfig
-index 9d5df2c102..71e2f40b9e 100644
+index a10e4c06b6..e714d34c38 100644
 --- a/arch/arm/mach-sunxi/Kconfig
 +++ b/arch/arm/mach-sunxi/Kconfig
 @@ -85,6 +85,11 @@ config DRAM_SUN50I_H616_TPR2
@@ -60,7 +60,7 @@ index 9d5df2c102..71e2f40b9e 100644
  config DRAM_SUN50I_H616_TPR10
  	hex "H616 DRAM TPR10 parameter"
  	help
-@@ -441,6 +446,9 @@ config SUNXI_DRAM_DDR2
+@@ -462,6 +467,9 @@ config SUNXI_DRAM_DDR2
  config SUNXI_DRAM_LPDDR3
  	bool
  
@@ -70,7 +70,7 @@ index 9d5df2c102..71e2f40b9e 100644
  choice
  	prompt "DRAM Type and Timing"
  	default SUNXI_DRAM_DDR3_1333 if !MACH_SUN8I_V3S
-@@ -484,6 +492,14 @@ config SUNXI_DRAM_H616_LPDDR3
+@@ -505,6 +513,14 @@ config SUNXI_DRAM_H616_LPDDR3
  	  This option is the LPDDR3 timing used by the stock boot0 by
  	  Allwinner.
  
@@ -522,5 +522,5 @@ index 0000000000..cfb938af12
 +}
 \ No newline at end of file
 -- 
-2.40.1
+2.34.1
 
