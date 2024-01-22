@@ -1,0 +1,667 @@
+From 647d8bbdda5967ad29b0f6620a7be19a1fbd93a8 Mon Sep 17 00:00:00 2001
+From: elasticdotventures <brianh@elastic.ventures>
+Date: Mon, 22 Jan 2024 05:52:50 +0000
+Subject: [PATCH] .
+
+---
+ arch/arm64/configs/longanpi_3h_defconfig | 549 ++++++++++++++++++++++-
+ 1 file changed, 543 insertions(+), 6 deletions(-)
+
+diff --git a/arch/arm64/configs/longanpi_3h_defconfig b/arch/arm64/configs/longanpi_3h_defconfig
+index e0568ea4bbe3..435afa36da42 100644
+--- a/arch/arm64/configs/longanpi_3h_defconfig
++++ b/arch/arm64/configs/longanpi_3h_defconfig
+@@ -535,7 +535,8 @@ CONFIG_ARM_ALLWINNER_SUN50I_CPUFREQ_NVMEM=y
+ # end of CPU Power Management
+ 
+ CONFIG_HAVE_KVM=y
+-# CONFIG_VIRTUALIZATION is not set
++CONFIG_VIRTUALIZATION=y
++# CONFIG_KVM is not set
+ 
+ #
+ # General architecture-dependent options
+@@ -823,6 +824,9 @@ CONFIG_LOCK_MM_AND_FIND_VMA=y
+ # end of Memory Management options
+ 
+ CONFIG_NET=y
++CONFIG_NET_INGRESS=y
++CONFIG_NET_EGRESS=y
++CONFIG_SKB_EXTENSIONS=y
+ 
+ #
+ # Networking options
+@@ -842,13 +846,16 @@ CONFIG_INET=y
+ # CONFIG_IP_PNP is not set
+ # CONFIG_NET_IPIP is not set
+ # CONFIG_NET_IPGRE_DEMUX is not set
++CONFIG_NET_IP_TUNNEL=m
+ # CONFIG_SYN_COOKIES is not set
+ # CONFIG_NET_IPVTI is not set
+ # CONFIG_NET_FOU is not set
++# CONFIG_NET_FOU_IP_TUNNELS is not set
+ # CONFIG_INET_AH is not set
+ # CONFIG_INET_ESP is not set
+ # CONFIG_INET_IPCOMP is not set
+ CONFIG_INET_TABLE_PERTURB_ORDER=16
++CONFIG_INET_TUNNEL=m
+ # CONFIG_INET_DIAG is not set
+ CONFIG_TCP_CONG_ADVANCED=y
+ CONFIG_TCP_CONG_BIC=m
+@@ -870,13 +877,138 @@ CONFIG_TCP_CONG_HTCP=m
+ CONFIG_DEFAULT_CUBIC=y
+ # CONFIG_DEFAULT_RENO is not set
+ CONFIG_DEFAULT_TCP_CONG="cubic"
+-# CONFIG_TCP_AO is not set
+ # CONFIG_TCP_MD5SIG is not set
+-# CONFIG_IPV6 is not set
++CONFIG_IPV6=m
++# CONFIG_IPV6_ROUTER_PREF is not set
++# CONFIG_IPV6_OPTIMISTIC_DAD is not set
++# CONFIG_INET6_AH is not set
++# CONFIG_INET6_ESP is not set
++# CONFIG_INET6_IPCOMP is not set
++# CONFIG_IPV6_MIP6 is not set
++# CONFIG_IPV6_ILA is not set
++# CONFIG_IPV6_VTI is not set
++CONFIG_IPV6_SIT=m
++# CONFIG_IPV6_SIT_6RD is not set
++CONFIG_IPV6_NDISC_NODETYPE=y
++# CONFIG_IPV6_TUNNEL is not set
++# CONFIG_IPV6_MULTIPLE_TABLES is not set
++# CONFIG_IPV6_MROUTE is not set
++# CONFIG_IPV6_SEG6_LWTUNNEL is not set
++# CONFIG_IPV6_SEG6_HMAC is not set
++# CONFIG_IPV6_RPL_LWTUNNEL is not set
++# CONFIG_IPV6_IOAM6_LWTUNNEL is not set
+ # CONFIG_MPTCP is not set
+ # CONFIG_NETWORK_SECMARK is not set
+ # CONFIG_NETWORK_PHY_TIMESTAMPING is not set
+-# CONFIG_NETFILTER is not set
++CONFIG_NETFILTER=y
++CONFIG_NETFILTER_ADVANCED=y
++CONFIG_BRIDGE_NETFILTER=m
++
++#
++# Core Netfilter Configuration
++#
++CONFIG_NETFILTER_INGRESS=y
++CONFIG_NETFILTER_EGRESS=y
++CONFIG_NETFILTER_NETLINK=m
++CONFIG_NETFILTER_FAMILY_BRIDGE=y
++# CONFIG_NETFILTER_NETLINK_ACCT is not set
++# CONFIG_NETFILTER_NETLINK_QUEUE is not set
++# CONFIG_NETFILTER_NETLINK_LOG is not set
++# CONFIG_NETFILTER_NETLINK_OSF is not set
++# CONFIG_NF_CONNTRACK is not set
++# CONFIG_NF_LOG_SYSLOG is not set
++# CONFIG_NF_TABLES is not set
++# CONFIG_NETFILTER_XTABLES is not set
++# end of Core Netfilter Configuration
++
++CONFIG_IP_SET=m
++CONFIG_IP_SET_MAX=256
++# CONFIG_IP_SET_BITMAP_IP is not set
++# CONFIG_IP_SET_BITMAP_IPMAC is not set
++# CONFIG_IP_SET_BITMAP_PORT is not set
++# CONFIG_IP_SET_HASH_IP is not set
++# CONFIG_IP_SET_HASH_IPMARK is not set
++# CONFIG_IP_SET_HASH_IPPORT is not set
++# CONFIG_IP_SET_HASH_IPPORTIP is not set
++# CONFIG_IP_SET_HASH_IPPORTNET is not set
++# CONFIG_IP_SET_HASH_IPMAC is not set
++# CONFIG_IP_SET_HASH_MAC is not set
++# CONFIG_IP_SET_HASH_NETPORTNET is not set
++# CONFIG_IP_SET_HASH_NET is not set
++# CONFIG_IP_SET_HASH_NETNET is not set
++# CONFIG_IP_SET_HASH_NETPORT is not set
++# CONFIG_IP_SET_HASH_NETIFACE is not set
++# CONFIG_IP_SET_LIST_SET is not set
++CONFIG_IP_VS=m
++# CONFIG_IP_VS_IPV6 is not set
++# CONFIG_IP_VS_DEBUG is not set
++CONFIG_IP_VS_TAB_BITS=12
++
++#
++# IPVS transport protocol load balancing support
++#
++# CONFIG_IP_VS_PROTO_TCP is not set
++# CONFIG_IP_VS_PROTO_UDP is not set
++# CONFIG_IP_VS_PROTO_ESP is not set
++# CONFIG_IP_VS_PROTO_AH is not set
++# CONFIG_IP_VS_PROTO_SCTP is not set
++
++#
++# IPVS scheduler
++#
++# CONFIG_IP_VS_RR is not set
++# CONFIG_IP_VS_WRR is not set
++# CONFIG_IP_VS_LC is not set
++# CONFIG_IP_VS_WLC is not set
++# CONFIG_IP_VS_FO is not set
++# CONFIG_IP_VS_OVF is not set
++# CONFIG_IP_VS_LBLC is not set
++# CONFIG_IP_VS_LBLCR is not set
++# CONFIG_IP_VS_DH is not set
++# CONFIG_IP_VS_SH is not set
++# CONFIG_IP_VS_MH is not set
++# CONFIG_IP_VS_SED is not set
++# CONFIG_IP_VS_NQ is not set
++# CONFIG_IP_VS_TWOS is not set
++
++#
++# IPVS SH scheduler
++#
++CONFIG_IP_VS_SH_TAB_BITS=8
++
++#
++# IPVS MH scheduler
++#
++CONFIG_IP_VS_MH_TAB_INDEX=12
++
++#
++# IPVS application helper
++#
++
++#
++# IP: Netfilter Configuration
++#
++# CONFIG_NF_SOCKET_IPV4 is not set
++# CONFIG_NF_TPROXY_IPV4 is not set
++# CONFIG_NF_DUP_IPV4 is not set
++# CONFIG_NF_LOG_ARP is not set
++# CONFIG_NF_LOG_IPV4 is not set
++# CONFIG_NF_REJECT_IPV4 is not set
++# CONFIG_IP_NF_IPTABLES is not set
++# CONFIG_IP_NF_ARPTABLES is not set
++# end of IP: Netfilter Configuration
++
++#
++# IPv6: Netfilter Configuration
++#
++CONFIG_NF_SOCKET_IPV6=m
++# CONFIG_NF_TPROXY_IPV6 is not set
++# CONFIG_NF_DUP_IPV6 is not set
++# CONFIG_NF_REJECT_IPV6 is not set
++# CONFIG_NF_LOG_IPV6 is not set
++# CONFIG_IP6_NF_IPTABLES is not set
++# end of IPv6: Netfilter Configuration
++
+ # CONFIG_BPFILTER is not set
+ # CONFIG_IP_DCCP is not set
+ # CONFIG_IP_SCTP is not set
+@@ -884,14 +1016,20 @@ CONFIG_DEFAULT_TCP_CONG="cubic"
+ # CONFIG_TIPC is not set
+ # CONFIG_ATM is not set
+ # CONFIG_L2TP is not set
+-# CONFIG_BRIDGE is not set
++CONFIG_STP=m
++CONFIG_BRIDGE=m
++CONFIG_BRIDGE_IGMP_SNOOPING=y
++# CONFIG_BRIDGE_MRP is not set
++# CONFIG_BRIDGE_CFM is not set
+ # CONFIG_NET_DSA is not set
+ # CONFIG_VLAN_8021Q is not set
++CONFIG_LLC=m
+ # CONFIG_LLC2 is not set
+ # CONFIG_ATALK is not set
+ # CONFIG_X25 is not set
+ # CONFIG_LAPB is not set
+ # CONFIG_PHONET is not set
++# CONFIG_6LOWPAN is not set
+ # CONFIG_IEEE802154 is not set
+ # CONFIG_NET_SCHED is not set
+ # CONFIG_DCB is not set
+@@ -1006,6 +1144,8 @@ CONFIG_RFKILL_GPIO=y
+ # CONFIG_PSAMPLE is not set
+ # CONFIG_NET_IFE is not set
+ # CONFIG_LWTUNNEL is not set
++CONFIG_DST_CACHE=y
++CONFIG_GRO_CELLS=y
+ CONFIG_NET_SELFTESTS=y
+ CONFIG_PAGE_POOL=y
+ # CONFIG_PAGE_POOL_STATS is not set
+@@ -1724,6 +1864,7 @@ CONFIG_POWER_RESET_SYSCON=y
+ # CONFIG_NVMEM_REBOOT_MODE is not set
+ CONFIG_POWER_SUPPLY=y
+ # CONFIG_POWER_SUPPLY_DEBUG is not set
++# CONFIG_GENERIC_ADC_BATTERY is not set
+ # CONFIG_IP5XXX_POWER is not set
+ # CONFIG_TEST_POWER is not set
+ # CONFIG_CHARGER_ADP5061 is not set
+@@ -1735,6 +1876,8 @@ CONFIG_POWER_SUPPLY=y
+ # CONFIG_BATTERY_SBS is not set
+ # CONFIG_CHARGER_SBS is not set
+ # CONFIG_BATTERY_BQ27XXX is not set
++# CONFIG_AXP20X_POWER is not set
++# CONFIG_BATTERY_MAX17040 is not set
+ # CONFIG_BATTERY_MAX17042 is not set
+ # CONFIG_CHARGER_MAX8903 is not set
+ # CONFIG_CHARGER_LP8727 is not set
+@@ -2278,6 +2421,7 @@ CONFIG_SND_SOC_I2C_AND_SPI=y
+ # CONFIG_SND_SOC_AK5386 is not set
+ # CONFIG_SND_SOC_AK5558 is not set
+ # CONFIG_SND_SOC_ALC5623 is not set
++# CONFIG_SND_SOC_AUDIO_IIO_AUX is not set
+ # CONFIG_SND_SOC_AW8738 is not set
+ # CONFIG_SND_SOC_AW88395 is not set
+ # CONFIG_SND_SOC_AW88261 is not set
+@@ -3139,6 +3283,7 @@ CONFIG_EXTCON=y
+ #
+ # Extcon Device Drivers
+ #
++# CONFIG_EXTCON_ADC_JACK is not set
+ # CONFIG_EXTCON_FSA9480 is not set
+ # CONFIG_EXTCON_GPIO is not set
+ # CONFIG_EXTCON_MAX3355 is not set
+@@ -3147,7 +3292,398 @@ CONFIG_EXTCON=y
+ # CONFIG_EXTCON_SM5502 is not set
+ # CONFIG_EXTCON_USB_GPIO is not set
+ # CONFIG_MEMORY is not set
+-# CONFIG_IIO is not set
++CONFIG_IIO=m
++# CONFIG_IIO_BUFFER is not set
++# CONFIG_IIO_CONFIGFS is not set
++# CONFIG_IIO_TRIGGER is not set
++# CONFIG_IIO_SW_DEVICE is not set
++# CONFIG_IIO_SW_TRIGGER is not set
++# CONFIG_IIO_TRIGGERED_EVENT is not set
++
++#
++# Accelerometers
++#
++# CONFIG_ADXL313_I2C is not set
++# CONFIG_ADXL345_I2C is not set
++# CONFIG_ADXL355_I2C is not set
++# CONFIG_ADXL367_I2C is not set
++# CONFIG_ADXL372_I2C is not set
++# CONFIG_BMA180 is not set
++# CONFIG_BMA400 is not set
++# CONFIG_BMC150_ACCEL is not set
++# CONFIG_DA280 is not set
++# CONFIG_DA311 is not set
++# CONFIG_DMARD06 is not set
++# CONFIG_DMARD09 is not set
++# CONFIG_DMARD10 is not set
++# CONFIG_FXLS8962AF_I2C is not set
++# CONFIG_IIO_ST_ACCEL_3AXIS is not set
++# CONFIG_IIO_KX022A_I2C is not set
++# CONFIG_KXSD9 is not set
++# CONFIG_KXCJK1013 is not set
++# CONFIG_MC3230 is not set
++# CONFIG_MMA7455_I2C is not set
++# CONFIG_MMA7660 is not set
++# CONFIG_MMA8452 is not set
++# CONFIG_MMA9551 is not set
++# CONFIG_MMA9553 is not set
++# CONFIG_MSA311 is not set
++# CONFIG_MXC4005 is not set
++# CONFIG_MXC6255 is not set
++# CONFIG_STK8312 is not set
++# CONFIG_STK8BA50 is not set
++# end of Accelerometers
++
++#
++# Analog to digital converters
++#
++# CONFIG_AD7091R5 is not set
++# CONFIG_AD7291 is not set
++# CONFIG_AD7606_IFACE_PARALLEL is not set
++# CONFIG_AD799X is not set
++# CONFIG_ADI_AXI_ADC is not set
++# CONFIG_AXP20X_ADC is not set
++# CONFIG_AXP288_ADC is not set
++# CONFIG_CC10001_ADC is not set
++# CONFIG_ENVELOPE_DETECTOR is not set
++# CONFIG_HX711 is not set
++# CONFIG_INA2XX_ADC is not set
++# CONFIG_LTC2309 is not set
++# CONFIG_LTC2471 is not set
++# CONFIG_LTC2485 is not set
++# CONFIG_LTC2497 is not set
++# CONFIG_MAX1363 is not set
++# CONFIG_MAX9611 is not set
++# CONFIG_MCP3422 is not set
++# CONFIG_NAU7802 is not set
++# CONFIG_RICHTEK_RTQ6056 is not set
++# CONFIG_SD_ADC_MODULATOR is not set
++# CONFIG_SUN20I_GPADC is not set
++# CONFIG_TI_ADC081C is not set
++# CONFIG_TI_ADS1015 is not set
++# CONFIG_TI_ADS7924 is not set
++# CONFIG_TI_ADS1100 is not set
++# CONFIG_VF610_ADC is not set
++# CONFIG_XILINX_XADC is not set
++# end of Analog to digital converters
++
++#
++# Analog to digital and digital to analog converters
++#
++# end of Analog to digital and digital to analog converters
++
++#
++# Analog Front Ends
++#
++# CONFIG_IIO_RESCALE is not set
++# end of Analog Front Ends
++
++#
++# Amplifiers
++#
++# CONFIG_HMC425 is not set
++# end of Amplifiers
++
++#
++# Capacitance to digital converters
++#
++# CONFIG_AD7150 is not set
++# CONFIG_AD7746 is not set
++# end of Capacitance to digital converters
++
++#
++# Chemical Sensors
++#
++# CONFIG_ATLAS_PH_SENSOR is not set
++# CONFIG_ATLAS_EZO_SENSOR is not set
++# CONFIG_BME680 is not set
++# CONFIG_CCS811 is not set
++# CONFIG_IAQCORE is not set
++# CONFIG_SCD30_CORE is not set
++# CONFIG_SCD4X is not set
++# CONFIG_SENSIRION_SGP30 is not set
++# CONFIG_SENSIRION_SGP40 is not set
++# CONFIG_SPS30_I2C is not set
++# CONFIG_SENSEAIR_SUNRISE_CO2 is not set
++# CONFIG_VZ89X is not set
++# end of Chemical Sensors
++
++#
++# Hid Sensor IIO Common
++#
++# end of Hid Sensor IIO Common
++
++#
++# IIO SCMI Sensors
++#
++# end of IIO SCMI Sensors
++
++#
++# SSP Sensor Common
++#
++# end of SSP Sensor Common
++
++#
++# Digital to analog converters
++#
++# CONFIG_AD5064 is not set
++# CONFIG_AD5380 is not set
++# CONFIG_AD5446 is not set
++# CONFIG_AD5593R is not set
++# CONFIG_AD5696_I2C is not set
++# CONFIG_DPOT_DAC is not set
++# CONFIG_DS4424 is not set
++# CONFIG_M62332 is not set
++# CONFIG_MAX517 is not set
++# CONFIG_MAX5821 is not set
++# CONFIG_MCP4725 is not set
++# CONFIG_MCP4728 is not set
++# CONFIG_TI_DAC5571 is not set
++# CONFIG_VF610_DAC is not set
++# end of Digital to analog converters
++
++#
++# IIO dummy driver
++#
++# end of IIO dummy driver
++
++#
++# Filters
++#
++# end of Filters
++
++#
++# Frequency Synthesizers DDS/PLL
++#
++
++#
++# Clock Generator/Distribution
++#
++# end of Clock Generator/Distribution
++
++#
++# Phase-Locked Loop (PLL) frequency synthesizers
++#
++# end of Phase-Locked Loop (PLL) frequency synthesizers
++# end of Frequency Synthesizers DDS/PLL
++
++#
++# Digital gyroscope sensors
++#
++# CONFIG_BMG160 is not set
++# CONFIG_FXAS21002C is not set
++# CONFIG_MPU3050_I2C is not set
++# CONFIG_IIO_ST_GYRO_3AXIS is not set
++# CONFIG_ITG3200 is not set
++# end of Digital gyroscope sensors
++
++#
++# Health Sensors
++#
++
++#
++# Heart Rate Monitors
++#
++# CONFIG_AFE4404 is not set
++# CONFIG_MAX30100 is not set
++# CONFIG_MAX30102 is not set
++# end of Heart Rate Monitors
++# end of Health Sensors
++
++#
++# Humidity sensors
++#
++# CONFIG_AM2315 is not set
++# CONFIG_DHT11 is not set
++# CONFIG_HDC100X is not set
++# CONFIG_HDC2010 is not set
++# CONFIG_HTS221 is not set
++# CONFIG_HTU21 is not set
++# CONFIG_SI7005 is not set
++# CONFIG_SI7020 is not set
++# end of Humidity sensors
++
++#
++# Inertial measurement units
++#
++# CONFIG_BMI160_I2C is not set
++# CONFIG_BOSCH_BNO055_I2C is not set
++# CONFIG_FXOS8700_I2C is not set
++# CONFIG_KMX61 is not set
++# CONFIG_INV_ICM42600_I2C is not set
++# CONFIG_INV_MPU6050_I2C is not set
++# CONFIG_IIO_ST_LSM6DSX is not set
++# CONFIG_IIO_ST_LSM9DS0 is not set
++# end of Inertial measurement units
++
++#
++# Light sensors
++#
++# CONFIG_ADJD_S311 is not set
++# CONFIG_ADUX1020 is not set
++# CONFIG_AL3010 is not set
++# CONFIG_AL3320A is not set
++# CONFIG_APDS9300 is not set
++# CONFIG_APDS9960 is not set
++# CONFIG_AS73211 is not set
++# CONFIG_BH1750 is not set
++# CONFIG_BH1780 is not set
++# CONFIG_CM32181 is not set
++# CONFIG_CM3232 is not set
++# CONFIG_CM3323 is not set
++# CONFIG_CM3605 is not set
++# CONFIG_CM36651 is not set
++# CONFIG_GP2AP002 is not set
++# CONFIG_GP2AP020A00F is not set
++# CONFIG_SENSORS_ISL29018 is not set
++# CONFIG_SENSORS_ISL29028 is not set
++# CONFIG_ISL29125 is not set
++# CONFIG_JSA1212 is not set
++# CONFIG_ROHM_BU27008 is not set
++# CONFIG_ROHM_BU27034 is not set
++# CONFIG_RPR0521 is not set
++# CONFIG_LTR501 is not set
++# CONFIG_LTRF216A is not set
++# CONFIG_LV0104CS is not set
++# CONFIG_MAX44000 is not set
++# CONFIG_MAX44009 is not set
++# CONFIG_NOA1305 is not set
++# CONFIG_OPT3001 is not set
++# CONFIG_OPT4001 is not set
++# CONFIG_PA12203001 is not set
++# CONFIG_SI1133 is not set
++# CONFIG_SI1145 is not set
++# CONFIG_STK3310 is not set
++# CONFIG_ST_UVIS25 is not set
++# CONFIG_TCS3414 is not set
++# CONFIG_TCS3472 is not set
++# CONFIG_SENSORS_TSL2563 is not set
++# CONFIG_TSL2583 is not set
++# CONFIG_TSL2591 is not set
++# CONFIG_TSL2772 is not set
++# CONFIG_TSL4531 is not set
++# CONFIG_US5182D is not set
++# CONFIG_VCNL4000 is not set
++# CONFIG_VCNL4035 is not set
++# CONFIG_VEML6030 is not set
++# CONFIG_VEML6070 is not set
++# CONFIG_VL6180 is not set
++# CONFIG_ZOPT2201 is not set
++# end of Light sensors
++
++#
++# Magnetometer sensors
++#
++# CONFIG_AK8974 is not set
++# CONFIG_AK8975 is not set
++# CONFIG_AK09911 is not set
++# CONFIG_BMC150_MAGN_I2C is not set
++# CONFIG_MAG3110 is not set
++# CONFIG_MMC35240 is not set
++# CONFIG_IIO_ST_MAGN_3AXIS is not set
++# CONFIG_SENSORS_HMC5843_I2C is not set
++# CONFIG_SENSORS_RM3100_I2C is not set
++# CONFIG_TI_TMAG5273 is not set
++# CONFIG_YAMAHA_YAS530 is not set
++# end of Magnetometer sensors
++
++#
++# Multiplexers
++#
++# CONFIG_IIO_MUX is not set
++# end of Multiplexers
++
++#
++# Inclinometer sensors
++#
++# end of Inclinometer sensors
++
++#
++# Linear and angular position sensors
++#
++# end of Linear and angular position sensors
++
++#
++# Digital potentiometers
++#
++# CONFIG_AD5110 is not set
++# CONFIG_AD5272 is not set
++# CONFIG_DS1803 is not set
++# CONFIG_MAX5432 is not set
++# CONFIG_MCP4018 is not set
++# CONFIG_MCP4531 is not set
++# CONFIG_TPL0102 is not set
++# end of Digital potentiometers
++
++#
++# Digital potentiostats
++#
++# CONFIG_LMP91000 is not set
++# end of Digital potentiostats
++
++#
++# Pressure sensors
++#
++# CONFIG_ABP060MG is not set
++# CONFIG_ROHM_BM1390 is not set
++# CONFIG_BMP280 is not set
++# CONFIG_DLHL60D is not set
++# CONFIG_DPS310 is not set
++# CONFIG_HP03 is not set
++# CONFIG_ICP10100 is not set
++# CONFIG_MPL115_I2C is not set
++# CONFIG_MPL3115 is not set
++# CONFIG_MPRLS0025PA is not set
++# CONFIG_MS5611 is not set
++# CONFIG_MS5637 is not set
++# CONFIG_IIO_ST_PRESS is not set
++# CONFIG_T5403 is not set
++# CONFIG_HP206C is not set
++# CONFIG_ZPA2326 is not set
++# end of Pressure sensors
++
++#
++# Lightning sensors
++#
++# end of Lightning sensors
++
++#
++# Proximity and distance sensors
++#
++# CONFIG_IRSD200 is not set
++# CONFIG_ISL29501 is not set
++# CONFIG_LIDAR_LITE_V2 is not set
++# CONFIG_MB1232 is not set
++# CONFIG_PING is not set
++# CONFIG_RFD77402 is not set
++# CONFIG_SRF04 is not set
++# CONFIG_SX9310 is not set
++# CONFIG_SX9324 is not set
++# CONFIG_SX9360 is not set
++# CONFIG_SX9500 is not set
++# CONFIG_SRF08 is not set
++# CONFIG_VCNL3020 is not set
++# CONFIG_VL53L0X_I2C is not set
++# end of Proximity and distance sensors
++
++#
++# Resolver to digital converters
++#
++# end of Resolver to digital converters
++
++#
++# Temperature sensors
++#
++# CONFIG_MLX90614 is not set
++# CONFIG_MLX90632 is not set
++# CONFIG_TMP006 is not set
++# CONFIG_TMP007 is not set
++# CONFIG_TMP117 is not set
++# CONFIG_TSYS01 is not set
++# CONFIG_TSYS02D is not set
++# CONFIG_MAX30208 is not set
++# end of Temperature sensors
++
+ # CONFIG_PWM is not set
+ 
+ #
+@@ -3197,6 +3733,7 @@ CONFIG_PHY_SUN4I_USB=y
+ # CONFIG_PHY_PXA_28NM_HSIC is not set
+ # CONFIG_PHY_PXA_28NM_USB2 is not set
+ # CONFIG_PHY_LAN966X_SERDES is not set
++# CONFIG_PHY_CPCAP_USB is not set
+ # CONFIG_PHY_MAPPHONE_MDM6600 is not set
+ # CONFIG_PHY_OCELOT_SERDES is not set
+ # end of PHY Subsystem
+-- 
+2.43.0
+
