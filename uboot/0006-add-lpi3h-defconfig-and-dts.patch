@@ -1,7 +1,7 @@
-From c53f2851f7e81905a5b01a801082a8356d0914c5 Mon Sep 17 00:00:00 2001
+From 82bf530c1316783858a02a331c04fa46a8c0c0a2 Mon Sep 17 00:00:00 2001
 From: Jisheng Zhang <jszhang@kernel.org>
 Date: Tue, 17 Oct 2023 17:40:52 +0800
-Subject: [PATCH 6/6] add lpi3h defconfig and dts
+Subject: [PATCH 6/7] add lpi3h defconfig and dts
 
 ---
  arch/arm/dts/sun50i-h618-longanpi-3h.dts |  190 ++
@@ -2275,5 +2275,5 @@ index 0000000000..7111b173be
 +# CONFIG_FSPI_CONF_HEADER is not set
 +# CONFIG_TOOLS_MKFWUMDATA is not set
 -- 
-2.40.1
+2.34.1
 

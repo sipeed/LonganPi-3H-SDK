@@ -1,7 +1,7 @@
-From b6c1a9d84c2fdc5928559eb2022da010174d2bf1 Mon Sep 17 00:00:00 2001
+From ce479e53ecb359972c8cbb58c9536feb85cb2f25 Mon Sep 17 00:00:00 2001
 From: Martin Botka <martin.botka@somainline.org>
 Date: Mon, 4 Sep 2023 17:57:02 +0200
-Subject: [PATCH 04/29] cpufreq: dt-platdev: Blocklist allwinner,h616 SoC
+Subject: [PATCH 04/30] cpufreq: dt-platdev: Blocklist allwinner,h616 SoC
 
 The AllWinner H616 uses H6 cpufreq driver.
 Add it to blocklist so its not created twice

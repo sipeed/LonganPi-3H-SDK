@@ -1,7 +1,7 @@
-From 35e2cfc19a4d88900c056aa3d1cebaadc52ad6b8 Mon Sep 17 00:00:00 2001
+From 787b81df37d82a0535ddba7d1426f6031f56b616 Mon Sep 17 00:00:00 2001
 From: Jisheng Zhang <jszhang@kernel.org>
 Date: Fri, 3 Nov 2023 03:30:01 +0800
-Subject: [PATCH 09/29] arm64: dts: allwinner: h618: add cpufreq support for
+Subject: [PATCH 09/30] arm64: dts: allwinner: h618: add cpufreq support for
  Sipeed Longan SoM 3H
 
 ---

@@ -1,7 +1,7 @@
-From bce555ae3deb747d2fb78291d9989ff80be6fefd Mon Sep 17 00:00:00 2001
+From b664499725083d2bdb8930e5ab35352e3d970f39 Mon Sep 17 00:00:00 2001
 From: Tiandi Zhou <zhoutiandi@sipeed.com>
 Date: Tue, 5 Dec 2023 15:15:08 +0800
-Subject: [PATCH 25/29] dts: allwinner: add lpi3h dtb
+Subject: [PATCH 25/30] dts: allwinner: add lpi3h dtb
 
 ---
  arch/arm64/boot/dts/allwinner/Makefile | 1 +

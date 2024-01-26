@@ -1,7 +1,7 @@
-From 04044d0b4cb6cee3021cc64dd2387834d0c4afd1 Mon Sep 17 00:00:00 2001
+From 8b3e7defb95b06458542bf4fe4cc187c63a3eafb Mon Sep 17 00:00:00 2001
 From: Andre Przywara <andre.przywara@arm.com>
 Date: Wed, 18 Oct 2023 16:50:12 +0100
-Subject: [PATCH 1/6] sunxi: board: simplify early PMIC setup conditions
+Subject: [PATCH 1/7] sunxi: board: simplify early PMIC setup conditions
 
 So far we have a convoluted #ifdef mesh that guards the early AXP PMIC
 setup in board.c. That combination of &&, || and negations is very hard
@@ -25,10 +25,10 @@ Signed-off-by: Andre Przywara <andre.przywara@arm.com>
  2 files changed, 15 insertions(+), 19 deletions(-)
 
 diff --git a/board/sunxi/board.c b/board/sunxi/board.c
-index ebaa943198..65d79a02c2 100644
+index 39ecbe988f..02fc3eef00 100644
 --- a/board/sunxi/board.c
 +++ b/board/sunxi/board.c
-@@ -597,50 +597,46 @@ void sunxi_board_init(void)
+@@ -581,50 +581,46 @@ void sunxi_board_init(void)
  		}
  	}
  
@@ -92,7 +92,7 @@ index ebaa943198..65d79a02c2 100644
  	power_failed |= axp_set_fldo(1, CONFIG_AXP_FLDO1_VOLT);
  	power_failed |= axp_set_fldo(2, CONFIG_AXP_FLDO2_VOLT);
  	power_failed |= axp_set_fldo(3, CONFIG_AXP_FLDO3_VOLT);
-@@ -649,7 +645,7 @@ void sunxi_board_init(void)
+@@ -633,7 +629,7 @@ void sunxi_board_init(void)
  #if defined CONFIG_AXP809_POWER || defined CONFIG_AXP818_POWER
  	power_failed |= axp_set_sw(IS_ENABLED(CONFIG_AXP_SW_ON));
  #endif
@@ -115,5 +115,5 @@ index 7f3b990d23..83cb31c937 100644
  	default 1200 if MACH_SUN6I
  	default 0 if MACH_SUN8I
 -- 
-2.40.1
+2.34.1
 

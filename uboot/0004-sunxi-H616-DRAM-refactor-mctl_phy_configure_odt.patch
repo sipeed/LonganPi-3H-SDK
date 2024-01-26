@@ -1,7 +1,7 @@
-From 993211e2f26afef1f3c7567ccc1ac56ee37d25c2 Mon Sep 17 00:00:00 2001
+From c0bedf368ce51768f240efe14299a44cec49a5df Mon Sep 17 00:00:00 2001
 From: Andre Przywara <andre.przywara@arm.com>
 Date: Sat, 14 Oct 2023 18:02:36 +0100
-Subject: [PATCH 4/6] sunxi: H616: DRAM: refactor mctl_phy_configure_odt()
+Subject: [PATCH 4/7] sunxi: H616: DRAM: refactor mctl_phy_configure_odt()
 
 The original H616 DDR3 ODT configuration code wrote board specific values
 into a sequence of paired registers.
@@ -122,5 +122,5 @@ index 7e580b62dc..ba5659d409 100644
  	dmb();
  }
 -- 
-2.40.1
+2.34.1
 
