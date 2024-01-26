@@ -1,7 +1,7 @@
-From 1336e1b582bb1fb160e33a2451bf8a5ad880ce62 Mon Sep 17 00:00:00 2001
+From 7a21991465ebc4d8d6382d5d586636d296b5b7e4 Mon Sep 17 00:00:00 2001
 From: Lu Hui <luhui@sipeed.com>
 Date: Tue, 7 Nov 2023 16:01:01 +0800
-Subject: [PATCH 20/29] drivers: aic8800: use UBUNTU config
+Subject: [PATCH 20/30] drivers: aic8800: use UBUNTU config
 
 ---
  drivers/net/wireless/aic8800/aic_load_fw/Makefile | 4 ++--

@@ -1,7 +1,7 @@
-From 97a4aeb40a17a3b119a50e3b0ba7124e204d7f62 Mon Sep 17 00:00:00 2001
+From a2809a5df4f1c218c4fd89966ae0aec9e8321917 Mon Sep 17 00:00:00 2001
 From: Martin Botka <martin.botka@somainline.org>
 Date: Mon, 4 Sep 2023 17:57:04 +0200
-Subject: [PATCH 05/29] cpufreq: sun50i: Add H616 support
+Subject: [PATCH 05/30] cpufreq: sun50i: Add H616 support
 
 AllWinner H616 SoC has few revisions that support different list
 of uV and frequencies.
