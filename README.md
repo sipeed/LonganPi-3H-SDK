@@ -1,22 +1,24 @@
 # LonganPi-3H-SDK
 Scripts and blobs for LonganPi 3H image build.
 
-Build arm-trusted-firmware
+1. Build arm-trusted-firmware
 ```shell
 sh mkatf.sh
 ```
 
-Build uboot
+2. Build uboot
 ```shell
 sh mkuboot.sh
 ```
 
-Build kernel
+3. Build kernel
 ```shell
 sh mklinux.sh
 ```
 
-Build rootfs
+4. Build rootfs debian
 ```shell
 sh mkrootfs.sh
+# or .. sh mkrootfs-ubuntu.sh
 ```
+
