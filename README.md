@@ -17,6 +17,12 @@ Scripts and blobs for LonganPi 3H image build.
 ```
 
 4. Build rootfs debian
+
+In Ubuntu, you need
+```shell
+sudo apt install debian-archive-keyring
+```
+
 ```shell
 ./mkrootfs.sh
 # or ./mkrootfs-ubuntu.sh
