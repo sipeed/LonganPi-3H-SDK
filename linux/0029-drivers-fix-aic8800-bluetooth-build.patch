@@ -1,7 +1,7 @@
-From eb2108f141e5da7f97a234b3954cb8006e587b08 Mon Sep 17 00:00:00 2001
+From 508236c03a5ada95d1186ff373c68b9e3fb7df91 Mon Sep 17 00:00:00 2001
 From: Tiandi Zhou <zhoutiandi@sipeed.com>
 Date: Wed, 20 Dec 2023 14:09:31 +0800
-Subject: [PATCH 29/30] drivers: fix aic8800 bluetooth build
+Subject: [PATCH 29/32] drivers: fix aic8800 bluetooth build
 
 ---
  drivers/bluetooth/aic_btusb.c | 2 +-

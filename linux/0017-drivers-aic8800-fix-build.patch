@@ -1,7 +1,7 @@
-From 507a7fd0132bfb3c691cbeac9294d0392f566f49 Mon Sep 17 00:00:00 2001
+From 9c388d9d058fe63e5d67cfef27934958b7bd3780 Mon Sep 17 00:00:00 2001
 From: Lu Hui <luhui@sipeed.com>
 Date: Tue, 7 Nov 2023 15:07:19 +0800
-Subject: [PATCH 17/30] drivers: aic8800: fix build
+Subject: [PATCH 17/32] drivers: aic8800: fix build
 
 ---
  drivers/net/wireless/Kconfig                  |  1 +

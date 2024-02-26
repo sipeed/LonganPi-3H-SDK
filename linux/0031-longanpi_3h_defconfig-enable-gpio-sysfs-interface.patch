@@ -1,0 +1,25 @@
+From 0bf2d74ebdb18084232fa5180f1a4211030227ff Mon Sep 17 00:00:00 2001
+From: Tiandi Zhou <zhoutiandi@sipeed.com>
+Date: Mon, 26 Feb 2024 10:40:43 +0800
+Subject: [PATCH 31/32] longanpi_3h_defconfig: enable gpio sysfs interface
+
+---
+ arch/arm64/configs/longanpi_3h_defconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm64/configs/longanpi_3h_defconfig b/arch/arm64/configs/longanpi_3h_defconfig
+index 9db56587c7d8..f2d02fcacae2 100644
+--- a/arch/arm64/configs/longanpi_3h_defconfig
++++ b/arch/arm64/configs/longanpi_3h_defconfig
+@@ -1639,7 +1639,7 @@ CONFIG_GPIOLIB=y
+ CONFIG_GPIOLIB_FASTPATH_LIMIT=512
+ CONFIG_OF_GPIO=y
+ # CONFIG_DEBUG_GPIO is not set
+-# CONFIG_GPIO_SYSFS is not set
++CONFIG_GPIO_SYSFS=y
+ CONFIG_GPIO_CDEV=y
+ # CONFIG_GPIO_CDEV_V1 is not set
+ CONFIG_GPIO_GENERIC=y
+-- 
+2.34.1
+

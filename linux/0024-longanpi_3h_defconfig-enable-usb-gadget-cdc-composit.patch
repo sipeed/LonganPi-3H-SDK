@@ -1,7 +1,7 @@
-From 899cb4e6902be7be29eb250fca1923210745f72c Mon Sep 17 00:00:00 2001
+From 772ef4cc64610471f518a0b9a5a8458d8d983b0e Mon Sep 17 00:00:00 2001
 From: Lu Hui <luhui@sipeed.com>
 Date: Tue, 7 Nov 2023 16:37:44 +0800
-Subject: [PATCH 24/30] longanpi_3h_defconfig: enable usb gadget cdc composite
+Subject: [PATCH 24/32] longanpi_3h_defconfig: enable usb gadget cdc composite
 
 ---
  arch/arm64/configs/longanpi_3h_defconfig | 3 ++-
