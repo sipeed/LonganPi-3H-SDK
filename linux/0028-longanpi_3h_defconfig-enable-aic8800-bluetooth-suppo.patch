@@ -1,7 +1,7 @@
-From d09ff4ded5d15e36029875d4e2a2e33e00c00349 Mon Sep 17 00:00:00 2001
+From 46f31babcb7f79382eb57c9f462d59a3e932ca45 Mon Sep 17 00:00:00 2001
 From: Tiandi Zhou <zhoutiandi@sipeed.com>
 Date: Tue, 19 Dec 2023 16:05:55 +0800
-Subject: [PATCH 28/30] longanpi_3h_defconfig: enable aic8800 bluetooth support
+Subject: [PATCH 28/32] longanpi_3h_defconfig: enable aic8800 bluetooth support
 
 ---
  arch/arm64/configs/longanpi_3h_defconfig | 489 ++++++++++++++++++++---

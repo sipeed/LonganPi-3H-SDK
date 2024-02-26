@@ -1,7 +1,7 @@
-From 79d7ce1c3178808a8cecdd9baa4a7ce2faa84f44 Mon Sep 17 00:00:00 2001
+From ac7a23918341edf4b8a1eac6924af05217f5c782 Mon Sep 17 00:00:00 2001
 From: Lu Hui <luhui@sipeed.com>
 Date: Tue, 7 Nov 2023 16:05:14 +0800
-Subject: [PATCH 21/30] drivers: aic8800: disable debug log
+Subject: [PATCH 21/32] drivers: aic8800: disable debug log
 
 ---
  drivers/net/wireless/aic8800/aic8800_fdrv/Makefile | 2 +-
