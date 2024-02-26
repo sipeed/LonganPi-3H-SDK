@@ -1,7 +1,7 @@
 From dc9c7baacf8d342dab6f25d7d4c28473eda4506f Mon Sep 17 00:00:00 2001
 From: Tiandi Zhou <zhoutiandi@sipeed.com>
 Date: Mon, 26 Feb 2024 10:54:27 +0800
-Subject: [PATCH 32/32] drivers: aic8800: update vendor drivers to version of
+Subject: [PATCH 32/33] drivers: aic8800: update vendor drivers to version of
  20231212
 
 ---
