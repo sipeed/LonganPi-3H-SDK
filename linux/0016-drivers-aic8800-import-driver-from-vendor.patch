@@ -1,7 +1,7 @@
-From 3752cce9817fa73d370bf7e32021a38ae50ca0b1 Mon Sep 17 00:00:00 2001
+From b5637af17705d9e12abc3ded641c92e8e2ac3bf1 Mon Sep 17 00:00:00 2001
 From: Lu Hui <luhui@sipeed.com>
 Date: Tue, 7 Nov 2023 13:38:08 +0800
-Subject: [PATCH 16/33] drivers: aic8800: import driver from vendor
+Subject: [PATCH 16/34] drivers: aic8800: import driver from vendor
 
 ---
  drivers/net/wireless/aic8800/Kconfig          |   10 +

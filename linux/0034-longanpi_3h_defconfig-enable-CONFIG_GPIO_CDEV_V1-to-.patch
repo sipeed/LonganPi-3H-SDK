@@ -1,25 +1,26 @@
-From edef60c87d884036ce9acc41e9d33dedf56fe7e3 Mon Sep 17 00:00:00 2001
+From 93b383726334d3968200aefe8c1091a760f9f848 Mon Sep 17 00:00:00 2001
 From: Tiandi Zhou <zhoutiandi@sipeed.com>
-Date: Mon, 26 Feb 2024 10:40:43 +0800
-Subject: [PATCH 31/34] longanpi_3h_defconfig: enable gpio sysfs interface
+Date: Wed, 28 Feb 2024 15:11:24 +0800
+Subject: [PATCH 34/34] longanpi_3h_defconfig: enable CONFIG_GPIO_CDEV_V1 to
+ fix gpiod usage issue
 
 ---
  arch/arm64/configs/longanpi_3h_defconfig | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/arm64/configs/longanpi_3h_defconfig b/arch/arm64/configs/longanpi_3h_defconfig
-index 9db56587c7d8..f2d02fcacae2 100644
+index f2d02fcacae2..371d6f1a5e6e 100644
 --- a/arch/arm64/configs/longanpi_3h_defconfig
 +++ b/arch/arm64/configs/longanpi_3h_defconfig
-@@ -1639,7 +1639,7 @@ CONFIG_GPIOLIB=y
- CONFIG_GPIOLIB_FASTPATH_LIMIT=512
- CONFIG_OF_GPIO=y
+@@ -1641,7 +1641,7 @@ CONFIG_OF_GPIO=y
  # CONFIG_DEBUG_GPIO is not set
--# CONFIG_GPIO_SYSFS is not set
-+CONFIG_GPIO_SYSFS=y
+ CONFIG_GPIO_SYSFS=y
  CONFIG_GPIO_CDEV=y
- # CONFIG_GPIO_CDEV_V1 is not set
+-# CONFIG_GPIO_CDEV_V1 is not set
++CONFIG_GPIO_CDEV_V1=y
  CONFIG_GPIO_GENERIC=y
+ 
+ #
 -- 
 2.34.1
 

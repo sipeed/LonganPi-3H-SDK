@@ -1,7 +1,7 @@
-From 21a979d042a7c9d3dfcdcb47645c1f31b7fe6243 Mon Sep 17 00:00:00 2001
+From 56b27d8ce263ff808905b4b50b8f4d2332dbbdfb Mon Sep 17 00:00:00 2001
 From: Lu Hui <luhui@sipeed.com>
 Date: Tue, 7 Nov 2023 15:54:03 +0800
-Subject: [PATCH 18/33] drivers: aic8800: change default firmware load path
+Subject: [PATCH 18/34] drivers: aic8800: change default firmware load path
 
 ---
  drivers/net/wireless/aic8800/aic8800_fdrv/Makefile | 2 +-
