@@ -1,7 +1,7 @@
-From 0548c55c66d3570f233998e9696cdabfcf4ecd3f Mon Sep 17 00:00:00 2001
+From 58108c133e200816464a86e5fc073a585f4efb9a Mon Sep 17 00:00:00 2001
 From: Jisheng Zhang <jszhang@kernel.org>
 Date: Tue, 17 Oct 2023 17:43:53 +0800
-Subject: [PATCH 02/33] add lpi3h defconfig
+Subject: [PATCH 02/34] add lpi3h defconfig
 
 ---
  arch/arm64/configs/longanpi_3h_defconfig | 3355 ++++++++++++++++++++++

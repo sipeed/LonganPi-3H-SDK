@@ -1,7 +1,7 @@
-From 0f2d1dfe42eb08d91756c20cb985eccc20200ed3 Mon Sep 17 00:00:00 2001
+From 9e9ee7bfa81388e2d9488c3308e552c3ba805d8f Mon Sep 17 00:00:00 2001
 From: Tiandi Zhou <zhoutiandi@sipeed.com>
 Date: Mon, 26 Feb 2024 11:41:56 +0800
-Subject: [PATCH 33/33] drivers: aic8800: fix build for version of 20231212
+Subject: [PATCH 33/34] drivers: aic8800: fix build for version of 20231212
  vendor driver
 
 ---
