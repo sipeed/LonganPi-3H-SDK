@@ -1,7 +1,7 @@
 From 6a1ba0febe3013e47c9a3909a0c1e832876608dc Mon Sep 17 00:00:00 2001
 From: orangepi-xunlong <258384131@qq.com>
 Date: Mon, 5 Jun 2023 14:16:04 +0800
-Subject: [PATCH 10/34] de33 ccu support
+Subject: [PATCH 10/35] de33 ccu support
 
 From linux-orangepi
 ---

@@ -1,7 +1,7 @@
 From b9fec74cb4d197de95b45337fb447a5329e0d0d2 Mon Sep 17 00:00:00 2001
 From: Tiandi Zhou <zhoutiandi@sipeed.com>
 Date: Fri, 1 Dec 2023 02:52:19 +0000
-Subject: [PATCH 14/34] longanpi_3h_defconfig: enable devtmpfs
+Subject: [PATCH 14/35] longanpi_3h_defconfig: enable devtmpfs
 
 ---
  arch/arm64/configs/longanpi_3h_defconfig | 2 +-

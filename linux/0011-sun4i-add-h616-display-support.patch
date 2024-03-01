@@ -1,7 +1,7 @@
 From 62575b23e3fe3121c1db22ecd67a6b02513ba125 Mon Sep 17 00:00:00 2001
 From: orangepi-xunlong <258384131@qq.com>
 Date: Mon, 5 Jun 2023 14:16:04 +0800
-Subject: [PATCH 11/34] sun4i: add h616 display support
+Subject: [PATCH 11/35] sun4i: add h616 display support
 
 From linux-orangepi
 ---

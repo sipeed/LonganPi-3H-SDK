@@ -24,7 +24,7 @@ sudo apt install debian-archive-keyring
 ```
 
 ```shell
-./mkrootfs.sh
+sudo ./mkrootfs.sh
 # or ./mkrootfs-ubuntu.sh
 ```
 
