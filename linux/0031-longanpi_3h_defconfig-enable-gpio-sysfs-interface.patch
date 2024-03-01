@@ -1,7 +1,7 @@
 From edef60c87d884036ce9acc41e9d33dedf56fe7e3 Mon Sep 17 00:00:00 2001
 From: Tiandi Zhou <zhoutiandi@sipeed.com>
 Date: Mon, 26 Feb 2024 10:40:43 +0800
-Subject: [PATCH 31/34] longanpi_3h_defconfig: enable gpio sysfs interface
+Subject: [PATCH 31/35] longanpi_3h_defconfig: enable gpio sysfs interface
 
 ---
  arch/arm64/configs/longanpi_3h_defconfig | 2 +-

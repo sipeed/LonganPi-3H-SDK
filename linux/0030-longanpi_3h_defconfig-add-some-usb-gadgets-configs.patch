@@ -1,7 +1,7 @@
 From 85cbeb8c9486777baf804ff88eee8a6b42a977a0 Mon Sep 17 00:00:00 2001
 From: Tiandi Zhou <zhoutiandi@sipeed.com>
 Date: Fri, 26 Jan 2024 16:27:03 +0800
-Subject: [PATCH 30/34] longanpi_3h_defconfig: add some usb gadgets configs
+Subject: [PATCH 30/35] longanpi_3h_defconfig: add some usb gadgets configs
 
 ---
  arch/arm64/configs/longanpi_3h_defconfig | 69 +++++++++++++++++++++---
