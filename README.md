@@ -1,5 +1,6 @@
 # LonganPi-3H-SDK
 Scripts and blobs for LonganPi 3H image build.
+> Tested on Ubuntu 22.04.2 LTS
 
 1. Build arm-trusted-firmware
 ```shell
