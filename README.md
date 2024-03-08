@@ -2,7 +2,12 @@
 Scripts and blobs for LonganPi 3H image build.
 > Tested on Ubuntu 22.04.2 LTS
 
-1. Build arm-trusted-firmware
+0. Install some dependencies
+```shell
+sudo apt install gcc-aarch64-linux-gnu mmdebstrap git debian-archive-keyring
+```
+
+2. Build arm-trusted-firmware
 ```shell
 ./mkatf.sh
 ```
@@ -18,11 +23,6 @@ Scripts and blobs for LonganPi 3H image build.
 ```
 
 4. Build rootfs debian
-
-In Ubuntu, you need
-```shell
-sudo apt install debian-archive-keyring
-```
 
 ```shell
 sudo ./mkrootfs.sh
