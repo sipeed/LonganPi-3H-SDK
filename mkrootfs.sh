@@ -15,8 +15,7 @@ deb https://mirrors.bfsu.edu.cn/debian/ testing main contrib non-free non-free-f
 deb https://mirrors.bfsu.edu.cn/debian/ testing-updates main contrib non-free non-free-firmware
 deb https://mirrors.bfsu.edu.cn/debian/ testing-backports main contrib non-free non-free-firmware
 deb https://mirrors.bfsu.edu.cn/debian-security/ testing-security main contrib non-free non-free-firmware
-" | $MMDEBSTRAP  unstable sid \
-  --aptopt='Dir::Etc::Trusted "/usr/share/keyrings/debian-archive-keyring.gpg"' --architectures=arm64 -v -d \
+" | $MMDEBSTRAP --aptopt='Dir::Etc::Trusted "/usr/share/keyrings/debian-archive-keyring.gpg"' --architectures=arm64 -v -d \
 	--include="ca-certificates locales dosfstools binutils file \
 	tree sudo bash-completion memtester openssh-server wireless-regdb \
 	wpasupplicant systemd-timesyncd usbutils parted systemd-sysv \
@@ -30,8 +29,7 @@ deb https://mirrors.bfsu.edu.cn/debian-security/ testing-security main contrib n
 	fonts-noto-mono fonts-noto-ui-core tango-icon-theme" > ./build/rootfs.tar
 }
 
-# if you want skip debian rootfs build, please comment this line:
-genrootfs
+genrootfs	# if you want skip debian rootfs build, please comment this line
 cd overlay
 for i in *
 do
