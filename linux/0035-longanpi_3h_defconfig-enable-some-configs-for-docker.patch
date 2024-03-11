@@ -1,7 +1,7 @@
 From b56427ba7c483d880b4be46a20ad6dc6e9331a0e Mon Sep 17 00:00:00 2001
 From: Tiandi Zhou <zhoutiandi@sipeed.com>
 Date: Fri, 1 Mar 2024 14:24:14 +0800
-Subject: [PATCH 35/35] longanpi_3h_defconfig: enable some configs for docker
+Subject: [PATCH 35/36] longanpi_3h_defconfig: enable some configs for docker
  usage
 
 ---
