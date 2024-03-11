@@ -1,7 +1,7 @@
 From 93b383726334d3968200aefe8c1091a760f9f848 Mon Sep 17 00:00:00 2001
 From: Tiandi Zhou <zhoutiandi@sipeed.com>
 Date: Wed, 28 Feb 2024 15:11:24 +0800
-Subject: [PATCH 34/35] longanpi_3h_defconfig: enable CONFIG_GPIO_CDEV_V1 to
+Subject: [PATCH 34/36] longanpi_3h_defconfig: enable CONFIG_GPIO_CDEV_V1 to
  fix gpiod usage issue
 
 ---

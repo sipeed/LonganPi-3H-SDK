@@ -1,0 +1,25 @@
+From 4197a759b287145ec0c50ccf2d3f2951d7a3c5de Mon Sep 17 00:00:00 2001
+From: Tiandi Zhou <zhoutiandi@sipeed.com>
+Date: Mon, 11 Mar 2024 14:29:21 +0800
+Subject: [PATCH 36/36] longanpi_3h_defconfig: enable TUN as kernel module
+
+---
+ arch/arm64/configs/longanpi_3h_defconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm64/configs/longanpi_3h_defconfig b/arch/arm64/configs/longanpi_3h_defconfig
+index 9b1914b00667..614fe0ed5650 100644
+--- a/arch/arm64/configs/longanpi_3h_defconfig
++++ b/arch/arm64/configs/longanpi_3h_defconfig
+@@ -1444,7 +1444,7 @@ CONFIG_NET_CORE=y
+ # CONFIG_GTP is not set
+ # CONFIG_MACSEC is not set
+ # CONFIG_NETCONSOLE is not set
+-# CONFIG_TUN is not set
++CONFIG_TUN=m
+ # CONFIG_TUN_VNET_CROSS_LE is not set
+ # CONFIG_VETH is not set
+ # CONFIG_NLMON is not set
+-- 
+2.34.1
+
