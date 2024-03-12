@@ -4,10 +4,11 @@ Scripts and blobs for LonganPi 3H image build.
 
 0. Install some dependencies
 ```shell
-sudo apt install gcc-aarch64-linux-gnu mmdebstrap git debian-archive-keyring
+sudo apt update
+sudo apt install qemu-user-static gcc-aarch64-linux-gnu mmdebstrap git binfmt-support make build-essential  bison flex make gcc libncurses-dev debian-archive-keyring swig libssl-dev bc python3-setuptools
 ```
 
-2. Build arm-trusted-firmware
+1. Build arm-trusted-firmware
 ```shell
 ./mkatf.sh
 ```
