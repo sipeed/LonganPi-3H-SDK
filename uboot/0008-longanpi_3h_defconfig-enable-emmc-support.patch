@@ -1,0 +1,25 @@
+From b9e265069c9a0cd11702b06fd85dbb7b4baf75c5 Mon Sep 17 00:00:00 2001
+From: Tiandi Zhou <zhoutiandi@sipeed.com>
+Date: Mon, 1 Apr 2024 17:23:07 +0800
+Subject: [PATCH 8/8] longanpi_3h_defconfig: enable emmc support
+
+---
+ configs/longanpi_3h_defconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configs/longanpi_3h_defconfig b/configs/longanpi_3h_defconfig
+index 7111b173be..b0bc3af497 100644
+--- a/configs/longanpi_3h_defconfig
++++ b/configs/longanpi_3h_defconfig
+@@ -261,7 +261,7 @@ CONFIG_SUNXI_MINIMUM_DRAM_MB=256
+ # CONFIG_UART0_PORT_F is not set
+ # CONFIG_OLD_SUNXI_KERNEL_COMPAT is not set
+ CONFIG_MACPWR=""
+-CONFIG_MMC_SUNXI_SLOT_EXTRA=-1
++CONFIG_MMC_SUNXI_SLOT_EXTRA=2
+ CONFIG_USB0_VBUS_PIN=""
+ CONFIG_USB0_VBUS_DET=""
+ CONFIG_USB0_ID_DET=""
+-- 
+2.34.1
+

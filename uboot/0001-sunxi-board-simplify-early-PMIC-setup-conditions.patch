@@ -1,7 +1,7 @@
-From 8b3e7defb95b06458542bf4fe4cc187c63a3eafb Mon Sep 17 00:00:00 2001
+From ee4d58b67a215d418c0826e61c18f26744b6e219 Mon Sep 17 00:00:00 2001
 From: Andre Przywara <andre.przywara@arm.com>
 Date: Wed, 18 Oct 2023 16:50:12 +0100
-Subject: [PATCH 1/7] sunxi: board: simplify early PMIC setup conditions
+Subject: [PATCH 1/8] sunxi: board: simplify early PMIC setup conditions
 
 So far we have a convoluted #ifdef mesh that guards the early AXP PMIC
 setup in board.c. That combination of &&, || and negations is very hard

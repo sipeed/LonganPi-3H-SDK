@@ -1,7 +1,7 @@
-From 2e95254f7253b6a2657fca61067292caf29a5aa3 Mon Sep 17 00:00:00 2001
+From f4577fef7637a695119a2b2ce0347a530c063607 Mon Sep 17 00:00:00 2001
 From: Andre Przywara <andre.przywara@arm.com>
 Date: Wed, 18 Oct 2023 16:50:14 +0100
-Subject: [PATCH 3/7] power: regulator: add AXP313 support
+Subject: [PATCH 3/8] power: regulator: add AXP313 support
 
 The X-Powers AXP313a is a small PMIC with just three buck converters and
 three LDOs, one of which is actually fixed (so not modelled here).
