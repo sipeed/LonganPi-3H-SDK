@@ -1,7 +1,7 @@
-From f29bcf0792a72803b6a29f858d585f3ff26e75ca Mon Sep 17 00:00:00 2001
+From 6b011e0bf404a7ebed07c535213ae54035544171 Mon Sep 17 00:00:00 2001
 From: Tiandi Zhou <zhoutiandi@sipeed.com>
 Date: Fri, 19 Jan 2024 11:57:49 +0800
-Subject: [PATCH 7/7] lpi3h: drivers: emmc: add emmc boot support
+Subject: [PATCH 7/8] lpi3h: drivers: emmc: add emmc boot support
 
 ---
  arch/arm/dts/sun50i-h618-longanpi-3h.dts |  1 -

@@ -1,7 +1,7 @@
-From ae692ad47a7a559a265ee5410bfb1ce90091e4fc Mon Sep 17 00:00:00 2001
+From c6fd9d873c7545956841db1cd795e1d6b5872023 Mon Sep 17 00:00:00 2001
 From: Andre Przywara <andre.przywara@arm.com>
 Date: Wed, 18 Oct 2023 16:50:13 +0100
-Subject: [PATCH 2/7] power: pmic: sunxi: add AXP313 SPL driver
+Subject: [PATCH 2/8] power: pmic: sunxi: add AXP313 SPL driver
 
 On boards using the AXP313 PMIC, the DRAM rail is often not setup
 correctly at reset time, so we have to program the PMIC very early in
