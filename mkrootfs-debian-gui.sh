@@ -26,13 +26,13 @@ deb https://mirrors.bfsu.edu.cn/debian-security/ testing-security main contrib n
 	device-tree-compiler debian-archive-keyring connman-gtk chromium\
 	linux-cpupower task-xfce-desktop xfce4-terminal xfce4-screenshooter \
 	pulseaudio-module-bluetooth blueman fonts-noto-core fonts-noto-cjk \
-	fonts-noto-mono fonts-noto-ui-core tango-icon-theme" > ./build/rootfs.tar
+	fonts-noto-mono fonts-noto-ui-core tango-icon-theme" > ./build/rootfs_debian_gui.tar
 }
 
 genrootfs	# if you want skip debian rootfs build, please comment this line
 cd overlay
 for i in *
 do
-tar --append --file=../build/rootfs.tar $i
+tar --append --file=../build/rootfs_debian_gui.tar $i
 done
 cd ..

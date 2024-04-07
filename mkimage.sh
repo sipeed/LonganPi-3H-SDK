@@ -83,8 +83,7 @@ sudo mount "${LOOP_DEV}p2" /tmp/rootfs || { echo "Failed to mount rootfs partiti
 # Proceed with partitioning, formatting, and other steps...
 # Copy kernel and device tree files
 # -L to copy symlinks, since vfat filesystems don't support those!
-sudo cp -L  $BUILD_DIR/linux/arch/arm64/boot/Image /tmp/boot
-sudo cp -Lr $BUILD_DIR/linux/arch/arm64/boot/dts /tmp/boot
+sudo cp -Lr ./overlay/boot/. /tmp/boot
 
 # Extract root filesystem
 echo "Extracting root filesystem..."
