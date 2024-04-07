@@ -24,10 +24,8 @@ deb http://ports.ubuntu.com/ubuntu-ports/ jammy-security main restricted univers
         ethtool ckermit lrzsz minicom picocom btop neofetch iotop htop \
         bmon e2fsprogs nvi tcpdump alsa-utils squashfs-tools evtest \
         bluez bluez-hcidump bluez-tools btscanner bluez-alsa-utils \
-        device-tree-compiler ubuntu-keyring connman-gtk chromium-browser \
-        xfce4 xfce4-terminal xfce4-screenshooter \
-        pulseaudio-module-bluetooth blueman fonts-noto-core fonts-noto-cjk \
-        fonts-noto-mono fonts-noto-ui-core tango-icon-theme" > ./build/rootfs-ubuntu.tar
+        device-tree-compiler ubuntu-keyring pulseaudio-module-bluetooth \
+        blueman network-manager network-manager-config-connectivity-ubuntu" > ./build/rootfs-ubuntu-cli.tar
 }
 
 # if you want skip Ubuntu rootfs build, please comment this line:
@@ -35,6 +33,6 @@ genrootfs
 cd overlay
 for i in *
 do
-tar --append --file=../build/rootfs-ubuntu.tar $i
+tar --append --file=../build/rootfs-ubuntu-cli.tar $i
 done
 cd ..
