@@ -4,8 +4,8 @@ mkdir -p build
 
 if [ -z "$URL" ]
 then
-	export URL="https://mirrors.bfsu.edu.cn/git/linux.git"
-fi
+	export URL="https://github.com/torvalds/linux.git"
+ fi
 
 if [ -z "$BRANCH" ]
 then
