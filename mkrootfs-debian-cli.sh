@@ -11,10 +11,10 @@ set -eux
 
 genrootfs() {
 echo "
-deb https://mirrors.bfsu.edu.cn/debian/ testing main contrib non-free non-free-firmware
-deb https://mirrors.bfsu.edu.cn/debian/ testing-updates main contrib non-free non-free-firmware
-deb https://mirrors.bfsu.edu.cn/debian/ testing-backports main contrib non-free non-free-firmware
-deb https://mirrors.bfsu.edu.cn/debian-security/ testing-security main contrib non-free non-free-firmware
+deb http://ftp.kr.debian.org/debian/ testing main contrib non-free non-free-firmware
+deb http://ftp.kr.debian.org/debian/ testing-updates main contrib non-free non-free-firmware
+deb http://ftp.kr.debian.org/debian/ testing-backports main contrib non-free non-free-firmware
+deb http://ftp.kr.debian.org/debian-security/ testing-security main contrib non-free non-free-firmware
 " | $MMDEBSTRAP --aptopt='Dir::Etc::Trusted "/usr/share/keyrings/debian-archive-keyring.gpg"' --architectures=arm64 -v -d \
         --include="ca-certificates locales dosfstools binutils file \
         tree sudo bash-completion memtester openssh-server wireless-regdb \
