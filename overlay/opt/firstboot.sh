@@ -4,6 +4,11 @@ PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin
 export PATH
 
 # resize root filesystem
+if (lsblk | grep -q "mmcblk1p2"); then
+        parted -s /dev/mmcblk1 "resizepart 2 -0"
+	resize2fs /dev/mmcblk1p2
+fi
+
 parted -s /dev/mmcblk0 "resizepart 2 -0"
 resize2fs /dev/mmcblk0p2
 
@@ -40,4 +45,4 @@ dpkg-reconfigure openssh-server
 systemctl enable rc-local
 
 # change the timezone
-timedatectl set-timezone Asia/Shanghai
+timedatectl set-timezone Asia/Seoul
