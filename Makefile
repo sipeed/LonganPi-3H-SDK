@@ -12,8 +12,6 @@ OUTPUT_TARGETS_IMG	:= $(addsuffix -img,${OUTPUT_TARGETS})
 # Targets that are meant to be run on the host
 build:
 	mkdir -p out/
-	mkdir -p certs
-	cp /usr/local/share/ca-certificates/* certs/
 	docker build --progress=plain -t ${TAG} .
 
 ${OUTPUT_TARGETS}: build
