@@ -9,9 +9,6 @@ RUN apt update && apt install -y \
 RUN git config --global user.email "pi3h@container.local"
 RUN git config --global user.name "Local Container Build"
 
-ADD ./certs/* /usr/local/share/ca-certificates
-RUN update-ca-certificates
-
 ADD . /LonganPi-3H-SDK
 
 WORKDIR /LonganPi-3H-SDK/
