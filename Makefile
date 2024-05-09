@@ -1,6 +1,6 @@
-# This is a hybrid Makefile - it is meant run on the host to kick-off the docker container build
+# This is a hybrid Makefile - it is meant run on the host to kick-off the docker container build,
 # but it's also used inside the container to perform the actual build steps.
-# The make targets that are meatn to be run inside the container have the suffix "incontainer"
+# The make targets that are meant to be run inside the container have the suffix .base, .img and .files
 
 TAG := longanpi3h-build:latest
 OUTPUT_DIR := /LonganPi-3H-SDK/out
