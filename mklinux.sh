@@ -26,9 +26,12 @@ set -eux
 
 if [ ! -e build/linux ] 
 then
-	git clone $URL build/linux --branch=${BRANCH}
+	mkdir -p build/linux
 	cd build/linux
-	git checkout 3b47bc037bd44f142ac09848e8d3ecccc726be99
+	git init
+	git remote add origin $URL
+	git fetch --depth 1 origin 3b47bc037bd44f142ac09848e8d3ecccc726be99
+	git checkout FETCH_HEAD
 	find ../../linux/ -name *.patch | sort | while read line
 	do
 		git am < $line
