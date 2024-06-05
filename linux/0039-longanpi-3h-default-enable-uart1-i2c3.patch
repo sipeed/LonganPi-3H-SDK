@@ -1,0 +1,79 @@
+From db89963deb72b3cd10c4ff5f26cc316e308dcbe5 Mon Sep 17 00:00:00 2001
+From: Lu <luhui@sipeed.com>
+Date: Wed, 8 May 2024 16:47:08 +0800
+Subject: [PATCH 39/39] longanpi-3h: default enable uart1 & i2c3
+
+---
+ arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi    | 15 +++++++++++++++
+ .../dts/allwinner/sun50i-h618-longanpi-3h.dts     | 15 +++++++++++++++
+ 2 files changed, 30 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
+index d38eeacb2b52..5f13ac53623b 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
+@@ -238,6 +238,11 @@ ext_rgmii_pins: rgmii-pins {
+ 				drive-strength = <40>;
+ 			};
+ 
++			uart1_pg_pins: uart1-pg-pins {
++				pins = "PG6", "PG7";
++				function = "uart1";
++			};
++
+ 			i2c0_pins: i2c0-pins {
+ 				pins = "PI6", "PI7";
+ 				function = "i2c0";
+@@ -248,6 +253,11 @@ i2c3_ph_pins: i2c3-ph-pins {
+ 				function = "i2c3";
+ 			};
+ 
++			i2c3_pg_pins: i2c3-pg-pins {
++				pins = "PG18", "PG17";
++				function = "i2c3";
++			};
++
+ 			ir_rx_pin: ir-rx-pin {
+ 				pins = "PH10";
+ 				function = "ir_rx";
+@@ -303,6 +313,11 @@ spi1_cs0_pin: spi1-cs0-pin {
+ 				function = "spi1";
+ 			};
+ 
++			spi1_cs1_pin: spi1-cs1-pin {
++				pins = "PH9";
++				function = "spi1";
++			};
++
+ 			uart0_ph_pins: uart0-ph-pins {
+ 				pins = "PH0", "PH1";
+ 				function = "uart0";
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h618-longanpi-3h.dts b/arch/arm64/boot/dts/allwinner/sun50i-h618-longanpi-3h.dts
+index f4e8391efffe..26dc75f2035a 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h618-longanpi-3h.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h618-longanpi-3h.dts
+@@ -146,6 +146,21 @@ &uart0 {
+ 	status = "okay";
+ };
+ 
++&uart1 {
++	pinctrl-0 = <&uart1_pg_pins>;
++	status = "okay";
++};
++
++&spi1 {
++	pinctrl-0 = <&spi1_pins>, <&spi1_cs0_pin>;
++	status = "okay";
++};
++
++&i2c3 {
++	pinctrl-0 = <&i2c3_pg_pins>;
++	status = "okay";
++};
++
+ &usbotg {
+ 	/*
+ 	 * PHY0 pins are connected to a USB-C socket, but a role switch
+-- 
+2.43.0
+

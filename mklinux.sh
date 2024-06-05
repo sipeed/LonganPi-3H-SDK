@@ -4,12 +4,12 @@ mkdir -p build
 
 if [ -z "$URL" ]
 then
-	export URL="https://mirrors.bfsu.edu.cn/git/linux.git"
+	export URL="https://github.com/torvalds/linux.git"
 fi
 
-if [ -z "$BRANCH" ]
+if [ -z "$COMMIT" ]
 then
-	export BRANCH="master"
+	export COMMIT="3b47bc037bd44f142ac09848e8d3ecccc726be99"
 fi
 
 if [ -z "$CROSS_COMPILE" ]
@@ -26,9 +26,12 @@ set -eux
 
 if [ ! -e build/linux ] 
 then
-	git clone $URL build/linux --branch=${BRANCH}
+	mkdir build/linux
 	cd build/linux
-	git checkout 3b47bc037bd44f142ac09848e8d3ecccc726be99
+	git init .
+	git remote add origin "${URL}"
+	git fetch origin "${COMMIT}" --depth=1
+	git checkout "${COMMIT}"
 	find ../../linux/ -name *.patch | sort | while read line
 	do
 		git am < $line
@@ -38,24 +41,8 @@ fi
 
 cd build/linux
 export ARCH=arm64
-export INSTALL_PATH=$(pwd)/_install/boot/
-export INSTALL_MOD_PATH=$(pwd)/_install/
-rm -rf ${INSTALL_PATH}
-rm -rf ${INSTALL_MOD_PATH}
-mkdir -p ${INSTALL_PATH}
-mkdir -p ${INSTALL_MOD_PATH}
+rm -rf ../linux-*.deb
 make mrproper
 make $CONFIG
 make -j$(nproc)
-make install
-make dtbs_install
-make modules_install
-cd _install/boot
-cp vmlinuz* Image
-cd dtbs
-cp -r $(ls)/* ./
-cd ../../
-mkdir usr
-mv lib usr
-cd ../
-cp -r _install/* ../../overlay/
+make deb-pkg

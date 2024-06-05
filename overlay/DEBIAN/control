@@ -1,0 +1,7 @@
+Package: sipeed-longanpi3h-extra
+Version: 20240604-0
+Section: utils
+Priority: optional
+Architecture: all
+Maintainer: Lu Hui <luhui@sipeed.com>
+Description: some config file & firmware for LonganPi 3H
