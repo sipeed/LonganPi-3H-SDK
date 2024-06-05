@@ -1,0 +1,48 @@
+From 9ce7cf99d780f8146697b426c944480105ae13ca Mon Sep 17 00:00:00 2001
+From: Lu <luhui@sipeed.com>
+Date: Tue, 7 May 2024 11:56:36 +0800
+Subject: [PATCH 9/9] longapi_3h_defconfig: if boot failed, start ums for
+ recovery
+
+---
+ configs/longanpi_3h_defconfig | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
+
+diff --git a/configs/longanpi_3h_defconfig b/configs/longanpi_3h_defconfig
+index b0bc3af497..0449b39b2d 100644
+--- a/configs/longanpi_3h_defconfig
++++ b/configs/longanpi_3h_defconfig
+@@ -467,9 +467,9 @@ CONFIG_ARCH_FIXUP_FDT_MEMORY=y
+ # CONFIG_USE_BOOTARGS is not set
+ # CONFIG_BOOTARGS_SUBST is not set
+ CONFIG_USE_BOOTCOMMAND=y
+-CONFIG_BOOTCOMMAND="run distro_bootcmd"
++CONFIG_BOOTCOMMAND="run distro_bootcmd; ums 0 mmc 1;"
+ CONFIG_USE_PREBOOT=y
+-CONFIG_PREBOOT="usb start"
++CONFIG_PREBOOT=""
+ CONFIG_PREBOOT_DEFINED=y
+ CONFIG_DEFAULT_FDT_FILE=""
+ # CONFIG_SAVE_PREV_BL_FDT_ADDR is not set
+@@ -1840,7 +1840,17 @@ CONFIG_SYSRESET_WATCHDOG_AUTO=y
+ #
+ # TPM support
+ #
+-# CONFIG_USB is not set
++CONFIG_USB=y
++# CONFIG_USB_XHCI_HCD is not set
++# CONFIG_USB_EHCI_HCD is not set
++# CONFIG_USB_OHCI_HCD is not set
++CONFIG_USB_MUSB_GADGET=y
++CONFIG_PHY_SUN4I_USB=y
++CONFIG_PHY_SUN50I_USB3=y
++CONFIG_USB_MUSB_SUNXI=y
++CONFIG_USB_FUNCTION_MASS_STORAGE=y
++CONFIG_CMD_USB_MASS_STORAGE=y
++
+ 
+ #
+ # UFS Host Controller Support
+-- 
+2.35.8
+

@@ -1,0 +1,78 @@
+name: mkimg-lpi3h-ci
+
+on:
+  workflow_dispatch:
+
+env:
+  ARCH: arm64
+
+jobs:
+  prepare:
+    runs-on: ubuntu-22.04
+    env:
+      CREATE_TARBALL: LonganPi-3H-SDK/build/rootfs.tar
+    steps:
+      - name: Install Software
+        run: |
+              sudo apt update && \
+              sudo apt install -y qemu-user-static gcc-aarch64-linux-gnu \
+              mmdebstrap git binfmt-support make build-essential bison \
+              flex make gcc libncurses-dev debian-archive-keyring swig \
+              libssl-dev bc python3-setuptools python3-dev libconfuse-dev \
+              debhelper fuse2fs rsync kmod cpio debian-keyring fuse ccache
+
+      - name: ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+
+      - name: Checkout genimage
+        uses: actions/checkout@v4
+        with:
+          repository: pengutronix/genimage
+          path: genimage
+          ref: v17
+          
+      - name: build genimage
+        run: |
+            pushd genimage
+              ./autogen.sh
+              ./configure
+              make -j$(nproc)
+              sudo make install
+            popd
+
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          path: 'LonganPi-3H-SDK'  # TODO: make this name a global variable
+
+      - name: Build
+        run: |
+              pushd LonganPi-3H-SDK
+                git config --global user.email "nop@nop.nop"
+                git config --global user.name "nop"
+                export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
+                sh mkatf.sh
+                sh mkuboot.sh
+                sh mklinux.sh
+                sh mkoverlay.sh
+                sudo sh mkrootfs.sh
+                sudo sh mkimage.sh
+              popd
+
+      - name: Make Checksum file & Compress files & Clean
+        run: |
+            pushd LonganPi-3H-SDK
+              sudo xz -z -v -9 -T $(nproc) build/images/sdcard.img
+              sudo mv build/images/* ../
+            popd
+            sudo sha512sum sdcard.img.xz > sdcard.img.xz.sha512
+            sudo rm -rf LonganPi-3H-SDK
+
+      - name: 'Upload Artifact'
+        uses: actions/upload-artifact@v3
+        with:
+          retention-days: 30
+          name: lpi3h-${{ env.BOARD }}-${{ env.BUILD_ID }}
+          path: |
+                  *.xz
+                  *.sha512

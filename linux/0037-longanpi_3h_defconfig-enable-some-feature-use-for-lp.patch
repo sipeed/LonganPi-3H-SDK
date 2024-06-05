@@ -1,0 +1,118 @@
+From dab8be613bc2bcc55399b563eeb073419a8a5344 Mon Sep 17 00:00:00 2001
+From: Lu Hui <luhui@sipeed.com>
+Date: Thu, 28 Mar 2024 18:22:30 +0800
+Subject: [PATCH 37/37] longanpi_3h_defconfig: enable some feature use for
+ lpi3h cluster
+
+---
+ arch/arm64/configs/longanpi_3h_defconfig | 47 ++++++++++++++++++------
+ 1 file changed, 35 insertions(+), 12 deletions(-)
+
+diff --git a/arch/arm64/configs/longanpi_3h_defconfig b/arch/arm64/configs/longanpi_3h_defconfig
+index 614fe0ed5650..164795864a11 100644
+--- a/arch/arm64/configs/longanpi_3h_defconfig
++++ b/arch/arm64/configs/longanpi_3h_defconfig
+@@ -866,13 +866,13 @@ CONFIG_TCP_CONG_HTCP=m
+ # CONFIG_TCP_CONG_ILLINOIS is not set
+ # CONFIG_TCP_CONG_DCTCP is not set
+ # CONFIG_TCP_CONG_CDG is not set
+-# CONFIG_TCP_CONG_BBR is not set
++CONFIG_TCP_CONG_BBR=m
+ CONFIG_DEFAULT_CUBIC=y
+ # CONFIG_DEFAULT_RENO is not set
+ CONFIG_DEFAULT_TCP_CONG="cubic"
+ # CONFIG_TCP_AO is not set
+ # CONFIG_TCP_MD5SIG is not set
+-# CONFIG_IPV6 is not set
++CONFIG_IPV6=m
+ # CONFIG_MPTCP is not set
+ # CONFIG_NETWORK_SECMARK is not set
+ # CONFIG_NETWORK_PHY_TIMESTAMPING is not set
+@@ -1058,7 +1058,7 @@ CONFIG_IP_NF_IPTABLES=y
+ # CONFIG_IP_NF_FILTER is not set
+ # CONFIG_IP_NF_TARGET_SYNPROXY is not set
+ CONFIG_IP_NF_NAT=m
+-# CONFIG_IP_NF_TARGET_MASQUERADE is not set
++CONFIG_IP_NF_TARGET_MASQUERADE=m
+ # CONFIG_IP_NF_TARGET_NETMAP is not set
+ # CONFIG_IP_NF_TARGET_REDIRECT is not set
+ # CONFIG_IP_NF_MANGLE is not set
+@@ -1324,13 +1324,13 @@ CONFIG_OF_RESERVED_MEM=y
+ # CONFIG_PARPORT is not set
+ CONFIG_BLK_DEV=y
+ # CONFIG_BLK_DEV_NULL_BLK is not set
+-# CONFIG_BLK_DEV_LOOP is not set
++CONFIG_BLK_DEV_LOOP=m
+ CONFIG_BLK_DEV_DRBD=m
+ # CONFIG_DRBD_FAULT_INJECTION is not set
+-# CONFIG_BLK_DEV_NBD is not set
+-# CONFIG_BLK_DEV_RAM is not set
++CONFIG_BLK_DEV_NBD=m
++CONFIG_BLK_DEV_RAM=m
+ # CONFIG_CDROM_PKTCDVD is not set
+-# CONFIG_ATA_OVER_ETH is not set
++CONFIG_ATA_OVER_ETH=m
+ CONFIG_BLK_DEV_RBD=m
+ # CONFIG_BLK_DEV_UBLK is not set
+ 
+@@ -1432,13 +1432,13 @@ CONFIG_NETDEVICES=y
+ CONFIG_MII=y
+ CONFIG_NET_CORE=y
+ # CONFIG_BONDING is not set
+-# CONFIG_DUMMY is not set
+-# CONFIG_WIREGUARD is not set
++CONFIG_DUMMY=m
++CONFIG_WIREGUARD=m
+ # CONFIG_EQUALIZER is not set
+ # CONFIG_NET_TEAM is not set
+ # CONFIG_MACVLAN is not set
+ # CONFIG_IPVLAN is not set
+-# CONFIG_VXLAN is not set
++CONFIG_VXLAN=m
+ # CONFIG_GENEVE is not set
+ # CONFIG_BAREUDP is not set
+ # CONFIG_GTP is not set
+@@ -1446,7 +1446,7 @@ CONFIG_NET_CORE=y
+ # CONFIG_NETCONSOLE is not set
+ CONFIG_TUN=m
+ # CONFIG_TUN_VNET_CROSS_LE is not set
+-# CONFIG_VETH is not set
++CONFIG_VETH=m
+ # CONFIG_NLMON is not set
+ # CONFIG_NETKIT is not set
+ CONFIG_ETHERNET=y
+@@ -3623,7 +3623,30 @@ CONFIG_CONFIGFS_FS=y
+ # end of Pseudo filesystems
+ 
+ # CONFIG_MISC_FILESYSTEMS is not set
+-# CONFIG_NETWORK_FILESYSTEMS is not set
++CONFIG_NETWORK_FILESYSTEMS=m
++CONFIG_NFS_FS=m
++CONFIG_NFS_V2=m
++CONFIG_NFS_V3=m
++CONFIG_NFS_V3_ACL=y
++CONFIG_NFS_V4=m
++CONFIG_NFS_V4_1=y
++CONFIG_NFS_V4_2=y
++# CONFIG_NFS_DISABLE_UDP_SUPPORT is not set
++CONFIG_NFS_V4_2_READ_PLUS=y
++CONFIG_NFSD=m
++CONFIG_NFSD_V2=y
++CONFIG_NFSD_V2_ACL=y
++CONFIG_NFSD_V3_ACL=y
++CONFIG_NFSD_V4=y
++CONFIG_NFSD_BLOCKLAYOUT=y
++CONFIG_NFSD_SCSILAYOUT=y
++CONFIG_NFSD_FLEXFILELAYOUT=y
++CONFIG_NFSD_V4_2_INTER_SSC=y
++CONFIG_CIFS=m
++CONFIG_SMB_SERVER=m
++CONFIG_SMB_SERVER_CHECK_CAP_NET_ADMIN=y
++CONFIG_CODA_FS=m
++CONFIG_AFS_FS=m
+ CONFIG_NLS=y
+ CONFIG_NLS_DEFAULT="utf8"
+ CONFIG_NLS_CODEPAGE_437=y
+-- 
+2.40.1
+
