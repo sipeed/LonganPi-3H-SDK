@@ -94,9 +94,9 @@ index 4965cbd345..2555da9f9c 100644
 +};
 +
 +&mdio1 {
-+	ac300_ephy: ethernet-phy@1 {
++	ac300_ephy: ethernet-phy@0 {
 +		compatible = "ethernet-phy-ieee802.3-c22";
-+		reg = <1>;
++		reg = <0>;
 +	};
 +};
 +
