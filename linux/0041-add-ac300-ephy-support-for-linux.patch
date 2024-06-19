@@ -1,0 +1,68 @@
+From d9be4efdf7092fcec7be862db7116fa752b02ac3 Mon Sep 17 00:00:00 2001
+From: Lu Hui <luhui@sipeed.com>
+Date: Wed, 19 Jun 2024 12:26:58 +0800
+Subject: [PATCH] add-ac300-ephy-support-for-linux
+
+---
+ .../arm64/boot/dts/allwinner/sun50i-h616.dtsi |  7 +++++++
+ .../dts/allwinner/sun50i-h618-longanpi-3h.dts | 19 +++++++++++++++++++
+ 2 files changed, 26 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
+index 5f13ac536..c907d8b43 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
+@@ -229,6 +229,13 @@ pio: pinctrl@300b000 {
+ 			interrupt-controller;
+ 			#interrupt-cells = <3>;
+ 
++			rmii_pins: rmii-pins {
++				pins = "PA0", "PA1", "PA2", "PA3", "PA4",
++				       "PA5", "PA6", "PA7", "PA8", "PA9";
++				function = "emac1";
++				drive-strength = <40>;
++			};
++
+ 			ext_rgmii_pins: rgmii-pins {
+ 				pins = "PI0", "PI1", "PI2", "PI3", "PI4",
+ 				       "PI5", "PI7", "PI8", "PI9", "PI10",
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h618-longanpi-3h.dts b/arch/arm64/boot/dts/allwinner/sun50i-h618-longanpi-3h.dts
+index 26dc75f20..485559a04 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h618-longanpi-3h.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h618-longanpi-3h.dts
+@@ -17,6 +17,7 @@ / {
+ 
+ 	aliases {
+ 		ethernet0 = &emac0;
++		ethernet1 = &emac1;
+ 		serial0 = &uart0;
+ 	};
+ 
+@@ -135,6 +136,24 @@ ext_rgmii_phy: ethernet-phy@1 {
+ 	};
+ };
+ 
++&emac1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&rmii_pins>;
++	phy-mode = "rmii";
++	phy-handle = <&ac300_ephy>;
++	phy-supply = <&reg_aldo1>;
++	allwinner,rx-delay-ps = <3100>;
++	allwinner,tx-delay-ps = <700>;
++	status = "okay";
++};
++
++&mdio1 {
++	ac300_ephy: ethernet-phy@10 {
++		compatible = "ethernet-phy-ieee802.3-c22";
++		reg = <0>;
++	};
++};
++
+ &mmc0 {
+ 	bus-width = <4>;
+ 	cd-gpios = <&pio 5 6 GPIO_ACTIVE_HIGH>;	/* PF6 */
+-- 
+2.34.1
+
