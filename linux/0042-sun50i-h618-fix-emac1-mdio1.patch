@@ -1,0 +1,51 @@
+From 3e5674b5a94d8b2e606c555bb5c215eb136ca1cc Mon Sep 17 00:00:00 2001
+From: chainsx <chainsx@outlook.com>
+Date: Sun, 8 Dec 2024 00:20:57 +0800
+Subject: [PATCH] sun50i-h618-fix-emac1-mdio1
+
+---
+ .../arm64/boot/dts/allwinner/sun50i-h616.dtsi | 28 +++++++++++++++++++
+ 1 file changed, 28 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
+index c907d8b43..16871b0b4 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
+@@ -595,6 +595,34 @@ mdio0: mdio {
+ 				#size-cells = <0>;
+ 			};
+ 		};
++		
++		emac1: ethernet@5030000 {
++			compatible = "allwinner,sunxi-gmac";
++			reg = <0x05030000 0x10000>,
++			      <0x03000034 0x4>;
++			reg-names = "gmac1_reg","ephy_reg";
++			interrupts = <GIC_SPI 15 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-names = "gmacirq";
++			resets = <&ccu RST_BUS_EMAC1>;
++			reset-names = "stmmaceth";
++			clocks = <&ccu CLK_BUS_EMAC1>,<&ccu CLK_EMAC_25M>;
++			clock-names = "bus-emac1","emac-25m";
++			pinctrl-0 = <&rmii_pins>;
++			pinctrl-names = "default";
++			tx-delay = <7>;
++			rx-delay = <31>;
++			phy-rst;
++			gmac-power0;
++			gmac-power1;
++			gmac-power2;
++			status = "disabled";
++
++			mdio1: mdio {
++				compatible = "ethernet-phy-ieee802.3-c22";
++				#address-cells = <1>;
++				#size-cells = <0>;
++			};
++		};
+ 
+ 		usbotg: usb@5100000 {
+ 			compatible = "allwinner,sun50i-h616-musb",
+-- 
+2.34.1
+
