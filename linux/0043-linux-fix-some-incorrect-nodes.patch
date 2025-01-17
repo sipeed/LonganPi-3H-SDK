@@ -1,0 +1,56 @@
+From 6674c1ff306f92e8266e0cd3312e4d659471ad8f Mon Sep 17 00:00:00 2001
+From: 916BGAI <zhangjian@sipeed.com>
+Date: Fri, 17 Jan 2025 14:52:26 +0800
+Subject: [PATCH 1/5] linux: fix some incorrect nodes
+
+---
+ arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi            | 6 ++++--
+ arch/arm64/boot/dts/allwinner/sun50i-h618-longanpi-3h.dts | 1 +
+ 2 files changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
+index 16871b0b4..6e8559ae4 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
+@@ -251,7 +251,7 @@ uart1_pg_pins: uart1-pg-pins {
+ 			};
+ 
+ 			i2c0_pins: i2c0-pins {
+-				pins = "PI6", "PI7";
++				pins = "PI5", "PI6";
+ 				function = "i2c0";
+ 			};
+ 
+@@ -261,7 +261,7 @@ i2c3_ph_pins: i2c3-ph-pins {
+ 			};
+ 
+ 			i2c3_pg_pins: i2c3-pg-pins {
+-				pins = "PG18", "PG17";
++				pins = "PG17", "PG18";
+ 				function = "i2c3";
+ 			};
+ 
+@@ -989,6 +989,8 @@ r_i2c: i2c@7081400 {
+ 			interrupts = <GIC_SPI 105 IRQ_TYPE_LEVEL_HIGH>;
+ 			clocks = <&r_ccu CLK_R_APB2_I2C>;
+ 			resets = <&r_ccu RST_R_APB2_I2C>;
++			pinctrl-names = "default";
++			pinctrl-0 = <&r_i2c_pins>;
+ 			status = "disabled";
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h618-longanpi-3h.dts b/arch/arm64/boot/dts/allwinner/sun50i-h618-longanpi-3h.dts
+index 485559a04..1242e69c6 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h618-longanpi-3h.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h618-longanpi-3h.dts
+@@ -166,6 +166,7 @@ &uart0 {
+ };
+ 
+ &uart1 {
++	pinctrl-names = "default";
+ 	pinctrl-0 = <&uart1_pg_pins>;
+ 	status = "okay";
+ };
+-- 
+2.48.0
+
