@@ -1,0 +1,267 @@
+From f9f122c8121f5d410fc042133ab3eb0492e1595a Mon Sep 17 00:00:00 2001
+From: 916BGAI <zhangjian@sipeed.com>
+Date: Fri, 17 Jan 2025 15:01:52 +0800
+Subject: [PATCH 4/5] linux: add allwinner bsp support
+
+---
+ Kconfig                                       |  2 +
+ Makefile                                      |  2 +
+ .../arm64/boot/dts/allwinner/sun50i-h616.dtsi | 29 ++++++++++
+ .../dts/allwinner/sun50i-h618-longanpi-3h.dts | 11 ++++
+ drivers/dma-buf/dma-heap.c                    | 56 +++++++++++++++----
+ include/linux/dma-heap.h                      | 35 ++++++++++++
+ scripts/Makefile.lib                          |  2 +-
+ 7 files changed, 124 insertions(+), 13 deletions(-)
+
+diff --git a/Kconfig b/Kconfig
+index 745bc773f..2e4a3acd2 100644
+--- a/Kconfig
++++ b/Kconfig
+@@ -9,6 +9,8 @@ source "scripts/Kconfig.include"
+ 
+ source "init/Kconfig"
+ 
++source "bsp/Kconfig"
++
+ source "kernel/Kconfig.freezer"
+ 
+ source "fs/Kconfig.binfmt"
+diff --git a/Makefile b/Makefile
+index 99db546fb..63931a0d9 100644
+--- a/Makefile
++++ b/Makefile
+@@ -541,6 +541,7 @@ LINUXINCLUDE    := \
+ 		-I$(objtree)/arch/$(SRCARCH)/include/generated \
+ 		$(if $(building_out_of_srctree),-I$(srctree)/include) \
+ 		-I$(objtree)/include \
++		-I$(srctree)/bsp/include \
+ 		$(USERINCLUDE)
+ 
+ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
+@@ -733,6 +734,7 @@ ifeq ($(KBUILD_EXTMOD),)
+ # Objects we will link into vmlinux / subdirs we need to visit
+ core-y		:=
+ drivers-y	:=
++drivers-y	+= bsp/
+ libs-y		:= lib/
+ endif # KBUILD_EXTMOD
+ 
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
+index 49e0466df..2e0cb4adc 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
+@@ -162,6 +162,35 @@ mixer0_out_tcon_top_mixer0: endpoint {
+ 			};
+ 		};
+ 
++		mmu_aw: iommu@30f0000 {
++			compatible = "allwinner,iommu-v12-sun50iw9";
++			reg = <0x030f0000 0x1000>;
++			interrupts = <GIC_SPI 61 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-names = "iommu-irq";
++			clocks = <&ccu CLK_BUS_IOMMU>;
++			clock-names = "iommu";
++			#iommu-cells = <2>;
++		};
++
++		ve: ve@1c0e000 {
++			compatible = "allwinner,sunxi-cedar-ve";
++			reg = <0x01c0e000 0x1000>,
++			      <0x03000000 0x10>,
++			      <0x03001000 0x1000>;
++			interrupts = <GIC_SPI 93 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&ccu CLK_BUS_VE>, <&ccu CLK_VE>, <&ccu CLK_MBUS_VE>;
++			clock-names = "bus_ve", "ve", "mbus_ve";
++			resets = <&ccu RST_BUS_VE>;
++			iommus = <&mmu_aw 3 1>;
++			status="disabled";
++		};
++
++		ve1: ve1@1c0e000 {
++			compatible = "allwinner,sunxi-cedar-ve";
++			iommus = <&mmu_aw 2 1>;
++			status="disabled";
++		};
++
+ 		syscon: syscon@3000000 {
+ 			compatible = "allwinner,sun50i-h616-system-control";
+ 			reg = <0x03000000 0x1000>;
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h618-longanpi-3h.dts b/arch/arm64/boot/dts/allwinner/sun50i-h618-longanpi-3h.dts
+index 1242e69c6..7bbcd0796 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h618-longanpi-3h.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h618-longanpi-3h.dts
+@@ -19,6 +19,8 @@ aliases {
+ 		ethernet0 = &emac0;
+ 		ethernet1 = &emac1;
+ 		serial0 = &uart0;
++		ve0 = &ve;
++		ve1 = &ve1;
+ 	};
+ 
+ 	chosen {
+@@ -201,3 +203,12 @@ &usbphy {
+ 	usb1_vbus-supply = <&reg_vcc5v>;
+ 	status = "okay";
+ };
++
++&ve {
++	ve-supply = <&reg_dldo1>;
++	status="okay";
++};
++
++&ve1 {
++	status="okay";
++};
+\ No newline at end of file
+diff --git a/drivers/dma-buf/dma-heap.c b/drivers/dma-buf/dma-heap.c
+index 84ae708fa..821a68ff6 100644
+--- a/drivers/dma-buf/dma-heap.c
++++ b/drivers/dma-buf/dma-heap.c
+@@ -49,12 +49,32 @@ static dev_t dma_heap_devt;
+ static struct class *dma_heap_class;
+ static DEFINE_XARRAY_ALLOC(dma_heap_minors);
+ 
+-static int dma_heap_buffer_alloc(struct dma_heap *heap, size_t len,
++struct dma_heap *dma_heap_find(const char* name)
++{
++	struct dma_heap *h;
++
++	/* check the name is unique */
++	mutex_lock(&heap_list_lock);
++	list_for_each_entry(h, &heap_list, list) {
++		if (!strcmp(h->name, name)) {
++			mutex_unlock(&heap_list_lock);
++			return h;
++		}
++	}
++	mutex_unlock(&heap_list_lock);
++	return NULL;
++}
++EXPORT_SYMBOL_GPL(dma_heap_find);
++
++struct dma_buf *dma_heap_buffer_alloc(struct dma_heap *heap, size_t len,
+ 				 unsigned int fd_flags,
+ 				 unsigned int heap_flags)
+ {
+-	struct dma_buf *dmabuf;
+-	int fd;
++	if (fd_flags & ~DMA_HEAP_VALID_FD_FLAGS)
++		return ERR_PTR(-EINVAL);
++
++	if (heap_flags & ~DMA_HEAP_VALID_HEAP_FLAGS)
++		return ERR_PTR(-EINVAL);
+ 
+ 	/*
+ 	 * Allocations from all heaps have to begin
+@@ -62,9 +82,20 @@ static int dma_heap_buffer_alloc(struct dma_heap *heap, size_t len,
+ 	 */
+ 	len = PAGE_ALIGN(len);
+ 	if (!len)
+-		return -EINVAL;
++		return ERR_PTR(-EINVAL);
++
++	return heap->ops->allocate(heap, len, fd_flags, heap_flags);
++}
++EXPORT_SYMBOL_GPL(dma_heap_buffer_alloc);
++
++int dma_heap_bufferfd_alloc(struct dma_heap *heap, size_t len,
++				 unsigned int fd_flags,
++				 unsigned int heap_flags)
++{
++	struct dma_buf *dmabuf;
++	int fd;
+ 
+-	dmabuf = heap->ops->allocate(heap, len, fd_flags, heap_flags);
++	dmabuf = dma_heap_buffer_alloc(heap, len, fd_flags, heap_flags);
+ 	if (IS_ERR(dmabuf))
+ 		return PTR_ERR(dmabuf);
+ 
+@@ -75,6 +106,13 @@ static int dma_heap_buffer_alloc(struct dma_heap *heap, size_t len,
+ 	}
+ 	return fd;
+ }
++EXPORT_SYMBOL_GPL(dma_heap_bufferfd_alloc);
++
++void dma_heap_buffer_free(struct dma_buf *dmabuf)
++{
++	dma_buf_put(dmabuf);
++}
++EXPORT_SYMBOL_GPL(dma_heap_buffer_free);
+ 
+ static int dma_heap_open(struct inode *inode, struct file *file)
+ {
+@@ -102,13 +140,7 @@ static long dma_heap_ioctl_allocate(struct file *file, void *data)
+ 	if (heap_allocation->fd)
+ 		return -EINVAL;
+ 
+-	if (heap_allocation->fd_flags & ~DMA_HEAP_VALID_FD_FLAGS)
+-		return -EINVAL;
+-
+-	if (heap_allocation->heap_flags & ~DMA_HEAP_VALID_HEAP_FLAGS)
+-		return -EINVAL;
+-
+-	fd = dma_heap_buffer_alloc(heap, heap_allocation->len,
++	fd = dma_heap_bufferfd_alloc(heap, heap_allocation->len,
+ 				   heap_allocation->fd_flags,
+ 				   heap_allocation->heap_flags);
+ 	if (fd < 0)
+diff --git a/include/linux/dma-heap.h b/include/linux/dma-heap.h
+index 0c05561ca..1b6506c3f 100644
+--- a/include/linux/dma-heap.h
++++ b/include/linux/dma-heap.h
+@@ -65,4 +65,39 @@ const char *dma_heap_get_name(struct dma_heap *heap);
+  */
+ struct dma_heap *dma_heap_add(const struct dma_heap_export_info *exp_info);
+ 
++/**
++ * dma_heap_find - Returns the registered dma_heap with the specified name
++ * @name: Name of the heap to find
++ */
++struct dma_heap *dma_heap_find(const char* name);
++
++/**
++ * dma_heap_buffer_alloc - Allocate dma-buf from a dma_heap
++ * @heap:	dma_heap to allocate from
++ * @len:	size to allocate
++ * @fd_flags:	flags to set on returned dma-buf fd
++ * @heap_flags:	flags to pass to the dma heap
++ */
++struct dma_buf *dma_heap_buffer_alloc(struct dma_heap *heap, size_t len,
++			unsigned int fd_flags,
++			unsigned int heap_flags);
++
++/**
++ * dma_heap_bufferfd_alloc - Allocate dma-buf from a dma_heap
++ * @heap:	dma_heap to allocate from
++ * @len:	size to allocate
++ * @fd_flags:	flags to set on returned dma-buf fd
++ * @heap_flags:	flags to pass to the dma heap
++ */
++int dma_heap_bufferfd_alloc(struct dma_heap *heap, size_t len,
++			unsigned int fd_flags,
++			unsigned int heap_flags);
++
++/** dma_heap_buffer_free - Free dma_buf allocated by dma_heap_buffer_alloc
++ * @dma_buf:    dma_buf to free
++ *
++ * This is really only a simple wrapper to dma_buf_put()
++ */
++void dma_heap_buffer_free(struct dma_buf *);
++
+ #endif /* _DMA_HEAPS_H */
+diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
+index 1a965fe68..a15eb747b 100644
+--- a/scripts/Makefile.lib
++++ b/scripts/Makefile.lib
+@@ -242,7 +242,7 @@ cpp_flags      = -Wp,-MMD,$(depfile) $(NOSTDINC_FLAGS) $(LINUXINCLUDE)     \
+ 
+ ld_flags       = $(KBUILD_LDFLAGS) $(ldflags-y) $(LDFLAGS_$(@F))
+ 
+-DTC_INCLUDE    := $(srctree)/scripts/dtc/include-prefixes
++DTC_INCLUDE    := $(srctree)/scripts/dtc/include-prefixes $(srctree)/bsp/include
+ 
+ dtc_cpp_flags  = -Wp,-MMD,$(depfile).pre.tmp -nostdinc                    \
+ 		 $(addprefix -I,$(DTC_INCLUDE))                          \
+-- 
+2.48.0
+

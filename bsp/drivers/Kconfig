@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+menu "Device Drivers"
+
+# Multi-Media
+source "bsp/drivers/iommu/Kconfig"
+source "bsp/drivers/ve/Kconfig"
+
+endmenu

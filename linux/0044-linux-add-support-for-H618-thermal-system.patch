@@ -1,0 +1,490 @@
+From a75c0672d806134af133db609b55f8eb88105dbb Mon Sep 17 00:00:00 2001
+From: 916BGAI <zhangjian@sipeed.com>
+Date: Fri, 17 Jan 2025 14:54:55 +0800
+Subject: [PATCH 2/5] linux: add support for H618 thermal system
+
+---
+ .../thermal/allwinner,sun8i-a83t-ths.yaml     |  33 +++--
+ .../arm64/boot/dts/allwinner/sun50i-h616.dtsi |  88 +++++++++++++
+ drivers/soc/sunxi/sunxi_sram.c                |  22 ++++
+ drivers/thermal/sun8i_thermal.c               | 123 +++++++++++++++---
+ 4 files changed, 235 insertions(+), 31 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/thermal/allwinner,sun8i-a83t-ths.yaml b/Documentation/devicetree/bindings/thermal/allwinner,sun8i-a83t-ths.yaml
+index fbd421228..43428f48f 100644
+--- a/Documentation/devicetree/bindings/thermal/allwinner,sun8i-a83t-ths.yaml
++++ b/Documentation/devicetree/bindings/thermal/allwinner,sun8i-a83t-ths.yaml
+@@ -20,6 +20,7 @@ properties:
+       - allwinner,sun50i-a100-ths
+       - allwinner,sun50i-h5-ths
+       - allwinner,sun50i-h6-ths
++      - allwinner,sun50i-h616-ths
+ 
+   clocks:
+     minItems: 1
+@@ -49,6 +50,10 @@ properties:
+   nvmem-cell-names:
+     const: calibration
+ 
++  allwinner,sram:
++    maxItems: 1
++    description: phandle to device controlling temperate offset SYS_CFG register
++
+   # See Documentation/devicetree/bindings/thermal/thermal-sensor.yaml for details
+   "#thermal-sensor-cells":
+     enum:
+@@ -63,6 +68,7 @@ allOf:
+             enum:
+               - allwinner,sun50i-a100-ths
+               - allwinner,sun50i-h6-ths
++              - allwinner,sun50i-h616-ths
+ 
+     then:
+       properties:
+@@ -80,6 +86,17 @@ allOf:
+         clock-names:
+           minItems: 2
+ 
++  - if:
++      not:
++        properties:
++          compatible:
++            contains:
++              const: allwinner,sun50i-h616-ths
++
++  then:
++      properties:
++        allwinner,sram: false
++
+   - if:
+       properties:
+         compatible:
+@@ -97,16 +114,12 @@ allOf:
+           const: 1
+ 
+   - if:
+-      properties:
+-        compatible:
+-          contains:
+-            enum:
+-              - allwinner,sun8i-h3-ths
+-              - allwinner,sun8i-r40-ths
+-              - allwinner,sun50i-a64-ths
+-              - allwinner,sun50i-a100-ths
+-              - allwinner,sun50i-h5-ths
+-              - allwinner,sun50i-h6-ths
++      not:
++        properties:
++          compatible:
++            contains:
++              enum:
++                - allwinner,sun8i-a83t-ths
+ 
+     then:
+       required:
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
+index 6e8559ae4..a64460b90 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
+@@ -11,6 +11,7 @@
+ #include <dt-bindings/clock/sun8i-tcon-top.h>
+ #include <dt-bindings/reset/sun50i-h616-ccu.h>
+ #include <dt-bindings/reset/sun50i-h6-r-ccu.h>
++#include <dt-bindings/thermal/thermal.h>
+ #include <dt-bindings/reset/sun8i-de2.h>
+ 
+ / {
+@@ -198,6 +199,10 @@ sid: efuse@3006000 {
+ 			#address-cells = <1>;
+ 			#size-cells = <1>;
+ 
++			ths_calibration: thermal-sensor-calibration@14 {
++				reg = <0x14 0x8>;
++			};
++
+ 			cpu_speed_grade: cpu_speed_grade@0 {
+ 				reg = <0x0 2>;
+ 			};
+@@ -624,6 +629,19 @@ mdio1: mdio {
+ 			};
+ 		};
+ 
++		ths: thermal-sensor@5070400 {
++			compatible = "allwinner,sun50i-h616-ths";
++			reg = <0x05070400 0x400>;
++			interrupts = <GIC_SPI 19 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&ccu CLK_BUS_THS>;
++			clock-names = "bus";
++			resets = <&ccu RST_BUS_THS>;
++			nvmem-cells = <&ths_calibration>;
++			nvmem-cell-names = "calibration";
++			allwinner,sram = <&syscon>;
++			#thermal-sensor-cells = <1>;
++		};
++
+ 		usbotg: usb@5100000 {
+ 			compatible = "allwinner,sun50i-h616-musb",
+ 				     "allwinner,sun8i-h3-musb";
+@@ -1011,4 +1029,74 @@ r_rsb: rsb@7083000 {
+ 			#size-cells = <0>;
+ 		};
+ 	};
++
++	thermal-zones {
++		cpu-thermal {
++			polling-delay-passive = <500>;
++			polling-delay = <1000>;
++			thermal-sensors = <&ths 2>;
++			sustainable-power = <1000>;
++
++			trips {
++				cpu_threshold: cpu-trip-0 {
++					temperature = <60000>;
++					type = "passive";
++					hysteresis = <0>;
++				};
++				cpu_target: cpu-trip-1 {
++					temperature = <70000>;
++					type = "passive";
++					hysteresis = <0>;
++				};
++				cpu_critical: cpu-trip-2 {
++					temperature = <110000>;
++					type = "critical";
++					hysteresis = <0>;
++				};
++			};
++		};
++
++		gpu-thermal {
++			polling-delay-passive = <500>;
++			polling-delay = <1000>;
++			thermal-sensors = <&ths 0>;
++			sustainable-power = <1100>;
++
++			trips {
++				gpu_temp_critical: gpu-trip-0 {
++					temperature = <110000>;
++					type = "critical";
++					hysteresis = <0>;
++				};
++			};
++		};
++
++		ve-thermal {
++			polling-delay-passive = <0>;
++			polling-delay = <0>;
++			thermal-sensors = <&ths 1>;
++
++			trips {
++				ve_temp_critical: ve-trip-0 {
++					temperature = <110000>;
++					type = "critical";
++					hysteresis = <0>;
++				};
++			};
++		};
++
++		ddr-thermal {
++			polling-delay-passive = <0>;
++			polling-delay = <0>;
++			thermal-sensors = <&ths 3>;
++
++			trips {
++				ddr_temp_critical: ddr-trip-0 {
++					temperature = <110000>;
++					type = "critical";
++					hysteresis = <0>;
++				};
++			};
++		};
++	};
+ };
+diff --git a/drivers/soc/sunxi/sunxi_sram.c b/drivers/soc/sunxi/sunxi_sram.c
+index 4458b2e05..6eb6cf062 100644
+--- a/drivers/soc/sunxi/sunxi_sram.c
++++ b/drivers/soc/sunxi/sunxi_sram.c
+@@ -287,6 +287,7 @@ EXPORT_SYMBOL(sunxi_sram_release);
+ struct sunxi_sramc_variant {
+ 	int num_emac_clocks;
+ 	bool has_ldo_ctrl;
++	bool has_ths_offset;
+ };
+ 
+ static const struct sunxi_sramc_variant sun4i_a10_sramc_variant = {
+@@ -308,8 +309,10 @@ static const struct sunxi_sramc_variant sun50i_a64_sramc_variant = {
+ 
+ static const struct sunxi_sramc_variant sun50i_h616_sramc_variant = {
+ 	.num_emac_clocks = 2,
++	.has_ths_offset = true,
+ };
+ 
++#define SUNXI_SRAM_THS_OFFSET_REG	0x0
+ #define SUNXI_SRAM_EMAC_CLOCK_REG	0x30
+ #define SUNXI_SYS_LDO_CTRL_REG		0x150
+ 
+@@ -318,6 +321,8 @@ static bool sunxi_sram_regmap_accessible_reg(struct device *dev,
+ {
+ 	const struct sunxi_sramc_variant *variant = dev_get_drvdata(dev);
+ 
++	if (reg == SUNXI_SRAM_THS_OFFSET_REG && variant->has_ths_offset)
++		return true;
+ 	if (reg >= SUNXI_SRAM_EMAC_CLOCK_REG &&
+ 	    reg <  SUNXI_SRAM_EMAC_CLOCK_REG + variant->num_emac_clocks * 4)
+ 		return true;
+@@ -327,6 +332,20 @@ static bool sunxi_sram_regmap_accessible_reg(struct device *dev,
+ 	return false;
+ }
+ 
++static void sunxi_sram_lock(void *_lock)
++{
++	spinlock_t *lock = _lock;
++
++	spin_lock(lock);
++}
++
++static void sunxi_sram_unlock(void *_lock)
++{
++	spinlock_t *lock = _lock;
++
++	spin_unlock(lock);
++}
++
+ static struct regmap_config sunxi_sram_regmap_config = {
+ 	.reg_bits       = 32,
+ 	.val_bits       = 32,
+@@ -336,6 +355,9 @@ static struct regmap_config sunxi_sram_regmap_config = {
+ 	/* other devices have no business accessing other registers */
+ 	.readable_reg	= sunxi_sram_regmap_accessible_reg,
+ 	.writeable_reg	= sunxi_sram_regmap_accessible_reg,
++	.lock		= sunxi_sram_lock,
++	.unlock		= sunxi_sram_unlock,
++	.lock_arg	= &sram_lock,
+ };
+ 
+ static int __init sunxi_sram_probe(struct platform_device *pdev)
+diff --git a/drivers/thermal/sun8i_thermal.c b/drivers/thermal/sun8i_thermal.c
+index f989b55a8..f7c59b933 100644
+--- a/drivers/thermal/sun8i_thermal.c
++++ b/drivers/thermal/sun8i_thermal.c
+@@ -15,6 +15,7 @@
+ #include <linux/module.h>
+ #include <linux/nvmem-consumer.h>
+ #include <linux/of.h>
++#include <linux/of_platform.h>
+ #include <linux/platform_device.h>
+ #include <linux/regmap.h>
+ #include <linux/reset.h>
+@@ -50,7 +51,8 @@
+ #define SUN8I_THS_CTRL2_T_ACQ1(x)		((GENMASK(15, 0) & (x)) << 16)
+ #define SUN8I_THS_DATA_IRQ_STS(x)		BIT(x + 8)
+ 
+-#define SUN50I_THS_CTRL0_T_ACQ(x)		((GENMASK(15, 0) & (x)) << 16)
++#define SUN50I_THS_CTRL0_T_ACQ(x)		(GENMASK(15, 0) & ((x) - 1))
++#define SUN50I_THS_CTRL0_T_SAMPLE_PER(x)	((GENMASK(15, 0) & ((x) - 1)) << 16)
+ #define SUN50I_THS_FILTER_EN			BIT(2)
+ #define SUN50I_THS_FILTER_TYPE(x)		(GENMASK(1, 0) & (x))
+ #define SUN50I_H6_THS_PC_TEMP_PERIOD(x)		((GENMASK(19, 0) & (x)) << 12)
+@@ -65,6 +67,7 @@ struct tsensor {
+ struct ths_thermal_chip {
+ 	bool            has_mod_clk;
+ 	bool            has_bus_clk_reset;
++	bool			needs_sram;
+ 	int		sensor_num;
+ 	int		offset;
+ 	int		scale;
+@@ -82,12 +85,16 @@ struct ths_device {
+ 	const struct ths_thermal_chip		*chip;
+ 	struct device				*dev;
+ 	struct regmap				*regmap;
++	struct regmap_field			*sram_regmap_field;
+ 	struct reset_control			*reset;
+ 	struct clk				*bus_clk;
+ 	struct clk                              *mod_clk;
+ 	struct tsensor				sensor[MAX_SENSOR_NUM];
+ };
+ 
++/* The H616 needs to have a bit 16 in the SRAM control register cleared. */
++static const struct reg_field sun8i_ths_sram_reg_field = REG_FIELD(0x0, 16, 16);
++
+ /* Temp Unit: millidegree Celsius */
+ static int sun8i_ths_calc_temp(struct ths_device *tmdev,
+ 			       int id, int reg)
+@@ -221,16 +228,21 @@ static int sun50i_h6_ths_calibrate(struct ths_device *tmdev,
+ 	struct device *dev = tmdev->dev;
+ 	int i, ft_temp;
+ 
+-	if (!caldata[0] || callen < 2 + 2 * tmdev->chip->sensor_num)
++	if (!caldata[0])
+ 		return -EINVAL;
+ 
+ 	/*
+ 	 * efuse layout:
+ 	 *
+-	 *	0   11  16	 32
+-	 *	+-------+-------+-------+
+-	 *	|temp|  |sensor0|sensor1|
+-	 *	+-------+-------+-------+
++	 * 0      11  16     27   32     43   48    57
++	 * +----------+-----------+-----------+-----------+
++	 * |  temp |  |sensor0|   |sensor1|   |sensor2|   |
++	 * +----------+-----------+-----------+-----------+
++	 *                      ^           ^           ^
++	 *                      |           |           |
++	 *                      |           |           sensor3[11:8]
++	 *                      |           sensor3[7:4]
++	 *                      sensor3[3:0]
+ 	 *
+ 	 * The calibration data on the H6 is the ambient temperature and
+ 	 * sensor values that are filled during the factory test stage.
+@@ -243,9 +255,16 @@ static int sun50i_h6_ths_calibrate(struct ths_device *tmdev,
+ 	ft_temp = (caldata[0] & FT_TEMP_MASK) * 100;
+ 
+ 	for (i = 0; i < tmdev->chip->sensor_num; i++) {
+-		int sensor_reg = caldata[i + 1] & TEMP_CALIB_MASK;
+-		int cdata, offset;
+-		int sensor_temp = tmdev->chip->calc_temp(tmdev, i, sensor_reg);
++		int sensor_reg, sensor_temp, cdata, offset;
++
++		if (i == 3)
++			sensor_reg = (caldata[1] >> 12)
++				     | ((caldata[2] >> 12) << 4)
++				     | ((caldata[3] >> 12) << 8);
++		else
++			sensor_reg = caldata[i + 1] & TEMP_CALIB_MASK;
++
++		sensor_temp = tmdev->chip->calc_temp(tmdev, i, sensor_reg);
+ 
+ 		/*
+ 		 * Calibration data is CALIBRATE_DEFAULT - (calculated
+@@ -324,6 +343,34 @@ static void sun8i_ths_reset_control_assert(void *data)
+ 	reset_control_assert(data);
+ }
+ 
++static struct regmap *sun8i_ths_get_sram_regmap(struct device_node *node)
++{
++	struct device_node *sram_node;
++	struct platform_device *sram_pdev;
++	struct regmap *regmap = NULL;
++
++	sram_node = of_parse_phandle(node, "allwinner,sram", 0);
++	if (!sram_node)
++		return ERR_PTR(-ENODEV);
++
++	sram_pdev = of_find_device_by_node(sram_node);
++	if (!sram_pdev) {
++		/* platform device might not be probed yet */
++		regmap = ERR_PTR(-EPROBE_DEFER);
++		goto out_put_node;
++	}
++
++	/* If no regmap is found then the other device driver is at fault */
++	regmap = dev_get_regmap(&sram_pdev->dev, NULL);
++	if (!regmap)
++		regmap = ERR_PTR(-EINVAL);
++
++	platform_device_put(sram_pdev);
++out_put_node:
++	of_node_put(sram_node);
++	return regmap;
++}
++
+ static int sun8i_ths_resource_init(struct ths_device *tmdev)
+ {
+ 	struct device *dev = tmdev->dev;
+@@ -368,6 +415,19 @@ static int sun8i_ths_resource_init(struct ths_device *tmdev)
+ 	if (ret)
+ 		return ret;
+ 
++	if (tmdev->chip->needs_sram) {
++		struct regmap *regmap;
++
++		regmap = sun8i_ths_get_sram_regmap(dev->of_node);
++		if (IS_ERR(regmap))
++			return PTR_ERR(regmap);
++		tmdev->sram_regmap_field = devm_regmap_field_alloc(dev,
++						      regmap,
++						      sun8i_ths_sram_reg_field);
++		if (IS_ERR(tmdev->sram_regmap_field))
++			return PTR_ERR(tmdev->sram_regmap_field);
++	}
++
+ 	ret = sun8i_ths_calibrate(tmdev);
+ 	if (ret)
+ 		return ret;
+@@ -410,25 +470,31 @@ static int sun8i_h3_thermal_init(struct ths_device *tmdev)
+ 	return 0;
+ }
+ 
+-/*
+- * Without this undocumented value, the returned temperatures would
+- * be higher than real ones by about 20C.
+- */
+-#define SUN50I_H6_CTRL0_UNK 0x0000002f
+-
+ static int sun50i_h6_thermal_init(struct ths_device *tmdev)
+ {
+ 	int val;
+ 
++	/* The H616 needs to have a bit in the SRAM control register cleared. */
++	if (tmdev->sram_regmap_field)
++		regmap_field_write(tmdev->sram_regmap_field, 0);
++
+ 	/*
+-	 * T_acq = 20us
+-	 * clkin = 24MHz
+-	 *
+-	 * x = T_acq * clkin - 1
+-	 *   = 479
++	 * The manual recommends an overall sample frequency of 50 KHz (20us,
++	 * 480 cycles at 24 MHz), which provides plenty of time for both the
++	 * acquisition time (>24 cycles) and the actual conversion time
++	 * (>14 cycles).
++	 * The lower half of the CTRL register holds the "acquire time", in
++	 * clock cycles, which the manual recommends to be 2us:
++	 * 24MHz * 2us = 48 cycles.
++	 * The high half of THS_CTRL encodes the sample frequency, in clock
++	 * cycles: 24MHz * 20us = 480 cycles.
++	 * This is explained in the H616 manual, but apparently wrongly
++	 * described in the H6 manual, although the BSP code does the same
++	 * for both SoCs.
+ 	 */
+ 	regmap_write(tmdev->regmap, SUN50I_THS_CTRL0,
+-		     SUN50I_H6_CTRL0_UNK | SUN50I_THS_CTRL0_T_ACQ(479));
++		     SUN50I_THS_CTRL0_T_ACQ(48) |
++		     SUN50I_THS_CTRL0_T_SAMPLE_PER(480));
+ 	/* average over 4 samples */
+ 	regmap_write(tmdev->regmap, SUN50I_H6_THS_MFC,
+ 		     SUN50I_THS_FILTER_EN |
+@@ -606,6 +672,20 @@ static const struct ths_thermal_chip sun50i_h6_ths = {
+ 	.calc_temp = sun8i_ths_calc_temp,
+ };
+ 
++static const struct ths_thermal_chip sun50i_h616_ths = {
++	.sensor_num = 4,
++	.has_bus_clk_reset = true,
++	.needs_sram = true,
++	.ft_deviation = 8000,
++	.offset = 263655,
++	.scale = 810,
++	.temp_data_base = SUN50I_H6_THS_TEMP_DATA,
++	.calibrate = sun50i_h6_ths_calibrate,
++	.init = sun50i_h6_thermal_init,
++	.irq_ack = sun50i_h6_irq_ack,
++	.calc_temp = sun8i_ths_calc_temp,
++};
++
+ static const struct of_device_id of_ths_match[] = {
+ 	{ .compatible = "allwinner,sun8i-a83t-ths", .data = &sun8i_a83t_ths },
+ 	{ .compatible = "allwinner,sun8i-h3-ths", .data = &sun8i_h3_ths },
+@@ -614,6 +694,7 @@ static const struct of_device_id of_ths_match[] = {
+ 	{ .compatible = "allwinner,sun50i-a100-ths", .data = &sun50i_a100_ths },
+ 	{ .compatible = "allwinner,sun50i-h5-ths", .data = &sun50i_h5_ths },
+ 	{ .compatible = "allwinner,sun50i-h6-ths", .data = &sun50i_h6_ths },
++	{ .compatible = "allwinner,sun50i-h616-ths", .data = &sun50i_h616_ths },
+ 	{ /* sentinel */ },
+ };
+ MODULE_DEVICE_TABLE(of, of_ths_match);
+-- 
+2.48.0
+
