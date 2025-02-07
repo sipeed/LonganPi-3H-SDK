@@ -1,0 +1,117 @@
+From a42274f34bf70a53232af51cf3ec4352dff1cbf1 Mon Sep 17 00:00:00 2001
+From: 916BGAI <zhangjian@sipeed.com>
+Date: Fri, 7 Feb 2025 11:19:17 +0800
+Subject: [PATCH 1/2] linux: fix H618 emac1
+
+---
+ .../arm64/boot/dts/allwinner/sun50i-h616.dtsi | 23 ++++++-------------
+ .../dts/allwinner/sun50i-h618-longanpi-3h.dts |  4 ++--
+ .../net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 12 ++++++++--
+ 3 files changed, 19 insertions(+), 20 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
+index 2e0cb4adc..684bac32b 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
+@@ -670,28 +670,19 @@ mdio0: mdio {
+ 		};
+ 		
+ 		emac1: ethernet@5030000 {
+-			compatible = "allwinner,sunxi-gmac";
+-			reg = <0x05030000 0x10000>,
+-			      <0x03000034 0x4>;
+-			reg-names = "gmac1_reg","ephy_reg";
++			compatible = "allwinner,sun50i-h616-emac";
++			syscon = <&syscon 1>;
++			reg = <0x05030000 0x10000>;
+ 			interrupts = <GIC_SPI 15 IRQ_TYPE_LEVEL_HIGH>;
+-			interrupt-names = "gmacirq";
++			interrupt-names = "macirq";
+ 			resets = <&ccu RST_BUS_EMAC1>;
+ 			reset-names = "stmmaceth";
+-			clocks = <&ccu CLK_BUS_EMAC1>,<&ccu CLK_EMAC_25M>;
+-			clock-names = "bus-emac1","emac-25m";
+-			pinctrl-0 = <&rmii_pins>;
+-			pinctrl-names = "default";
+-			tx-delay = <7>;
+-			rx-delay = <31>;
+-			phy-rst;
+-			gmac-power0;
+-			gmac-power1;
+-			gmac-power2;
++			clocks = <&ccu CLK_BUS_EMAC1>;
++			clock-names = "stmmaceth";
+ 			status = "disabled";
+ 
+ 			mdio1: mdio {
+-				compatible = "ethernet-phy-ieee802.3-c22";
++				compatible = "snps,dwmac-mdio";
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
+ 			};
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h618-longanpi-3h.dts b/arch/arm64/boot/dts/allwinner/sun50i-h618-longanpi-3h.dts
+index 7bbcd0796..81d3ee11a 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h618-longanpi-3h.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h618-longanpi-3h.dts
+@@ -143,14 +143,14 @@ &emac1 {
+ 	pinctrl-0 = <&rmii_pins>;
+ 	phy-mode = "rmii";
+ 	phy-handle = <&ac300_ephy>;
+-	phy-supply = <&reg_aldo1>;
++	phy-supply = <&reg_dldo1>;
+ 	allwinner,rx-delay-ps = <3100>;
+ 	allwinner,tx-delay-ps = <700>;
+ 	status = "okay";
+ };
+ 
+ &mdio1 {
+-	ac300_ephy: ethernet-phy@10 {
++	ac300_ephy: ethernet-phy@0 {
+ 		compatible = "ethernet-phy-ieee802.3-c22";
+ 		reg = <0>;
+ 	};
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+index 137741b94..08cc3c9f4 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+@@ -1156,11 +1156,13 @@ static int sun8i_dwmac_probe(struct platform_device *pdev)
+ 	struct stmmac_resources stmmac_res;
+ 	struct sunxi_priv_data *gmac;
+ 	struct device *dev = &pdev->dev;
++	struct reg_field syscon_field;
+ 	phy_interface_t interface;
+ 	int ret;
+ 	struct stmmac_priv *priv;
+ 	struct net_device *ndev;
+ 	struct regmap *regmap;
++	u32 syscon_idx = 0;
+ 
+ 	ret = stmmac_get_platform_resources(pdev, &stmmac_res);
+ 	if (ret)
+@@ -1212,8 +1214,12 @@ static int sun8i_dwmac_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
+ 
+-	gmac->regmap_field = devm_regmap_field_alloc(dev, regmap,
+-						     *gmac->variant->syscon_field);
++	syscon_field = *gmac->variant->syscon_field;
++	ret = of_property_read_u32_index(pdev->dev.of_node, "syscon", 1,
++					 &syscon_idx);
++	if (!ret)
++		syscon_field.reg += syscon_idx * sizeof(u32);
++	gmac->regmap_field = devm_regmap_field_alloc(dev, regmap, syscon_field);
+ 	if (IS_ERR(gmac->regmap_field)) {
+ 		ret = PTR_ERR(gmac->regmap_field);
+ 		dev_err(dev, "Unable to map syscon register: %d\n", ret);
+@@ -1338,6 +1344,8 @@ static const struct of_device_id sun8i_dwmac_match[] = {
+ 		.data = &emac_variant_a64 },
+ 	{ .compatible = "allwinner,sun50i-h6-emac",
+ 		.data = &emac_variant_h6 },
++	{ .compatible = "allwinner,sun50i-h616-emac",
++		.data = &emac_variant_h6 },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, sun8i_dwmac_match);
+-- 
+2.48.1
+

@@ -1,0 +1,44 @@
+From d8cac98266b1a704a7f3a2e9ab29f04e80de9c10 Mon Sep 17 00:00:00 2001
+From: 916BGAI <916772719@qq.com>
+Date: Fri, 7 Feb 2025 13:55:41 +0800
+Subject: [PATCH] fix ac300 ephy init fail
+
+---
+ arch/arm/dts/sun50i-h618-longanpi-3h.dts | 4 ++--
+ board/sunxi/board.c                      | 4 ++++
+ 2 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/dts/sun50i-h618-longanpi-3h.dts b/arch/arm/dts/sun50i-h618-longanpi-3h.dts
+index 8f34a5f77f..696b341c13 100644
+--- a/arch/arm/dts/sun50i-h618-longanpi-3h.dts
++++ b/arch/arm/dts/sun50i-h618-longanpi-3h.dts
+@@ -96,9 +96,9 @@
+ };
+ 
+ &mdio1 {
+-	ac300_ephy: ethernet-phy@0 {
++	ac300_ephy: ethernet-phy@16 {
+ 		compatible = "ethernet-phy-ieee802.3-c22";
+-		reg = <0>;
++		reg = <16>;
+ 	};
+ };
+ 
+diff --git a/board/sunxi/board.c b/board/sunxi/board.c
+index 38dc57a230..a8598db5b6 100644
+--- a/board/sunxi/board.c
++++ b/board/sunxi/board.c
+@@ -108,6 +108,10 @@ void i2c_init_board(void)
+ #endif
+ #endif
+ 
++#if defined(CONFIG_MACH_SUN50I_H616) && defined(CONFIG_SUN8I_EMAC)
++	sunxi_gpio_set_cfgpin(SUNXI_GPA(12), 2);
++#endif
++
+ #ifdef CONFIG_R_I2C_ENABLE
+ #ifdef CONFIG_MACH_SUN50I
+ 	clock_twi_onoff(5, 1);
+-- 
+2.48.1
+
