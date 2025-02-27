@@ -1,18 +1,26 @@
-From d8cac98266b1a704a7f3a2e9ab29f04e80de9c10 Mon Sep 17 00:00:00 2001
-From: 916BGAI <916772719@qq.com>
-Date: Fri, 7 Feb 2025 13:55:41 +0800
-Subject: [PATCH] fix ac300 ephy init fail
+From ae995de974f469806bf78a788aeb3464eaa8268a Mon Sep 17 00:00:00 2001
+From: 916BGAI <zhangjian@sipeed.com>
+Date: Thu, 27 Feb 2025 15:56:42 +0800
+Subject: [PATCH 1/3] fix ac300 ephy init fail
 
 ---
- arch/arm/dts/sun50i-h618-longanpi-3h.dts | 4 ++--
+ arch/arm/dts/sun50i-h618-longanpi-3h.dts | 6 +++---
  board/sunxi/board.c                      | 4 ++++
- 2 files changed, 6 insertions(+), 2 deletions(-)
+ 2 files changed, 7 insertions(+), 3 deletions(-)
 
 diff --git a/arch/arm/dts/sun50i-h618-longanpi-3h.dts b/arch/arm/dts/sun50i-h618-longanpi-3h.dts
-index 8f34a5f77f..696b341c13 100644
+index 8f34a5f77f2..b1160037c69 100644
 --- a/arch/arm/dts/sun50i-h618-longanpi-3h.dts
 +++ b/arch/arm/dts/sun50i-h618-longanpi-3h.dts
-@@ -96,9 +96,9 @@
+@@ -89,16 +89,16 @@
+ 	pinctrl-0 = <&rmii_pins>;
+ 	phy-mode = "rmii";
+ 	phy-handle = <&ac300_ephy>;
+-	phy-supply = <&reg_aldo1>;
++	phy-supply = <&reg_dldo1>;
+ 	allwinner,rx-delay-ps = <3100>;
+ 	allwinner,tx-delay-ps = <700>;
+ 	status = "okay";
  };
  
  &mdio1 {
@@ -25,20 +33,20 @@ index 8f34a5f77f..696b341c13 100644
  };
  
 diff --git a/board/sunxi/board.c b/board/sunxi/board.c
-index 38dc57a230..a8598db5b6 100644
+index 38dc57a2306..e82650023c7 100644
 --- a/board/sunxi/board.c
 +++ b/board/sunxi/board.c
-@@ -108,6 +108,10 @@ void i2c_init_board(void)
- #endif
+@@ -848,6 +848,10 @@ int board_late_init(void)
+ 	usb_ether_init();
  #endif
  
 +#if defined(CONFIG_MACH_SUN50I_H616) && defined(CONFIG_SUN8I_EMAC)
 +	sunxi_gpio_set_cfgpin(SUNXI_GPA(12), 2);
 +#endif
 +
- #ifdef CONFIG_R_I2C_ENABLE
- #ifdef CONFIG_MACH_SUN50I
- 	clock_twi_onoff(5, 1);
+ 	return 0;
+ }
+ 
 -- 
 2.48.1
 

@@ -1,0 +1,57 @@
+From 91cde8d94f31fdd04dcd41d65903b0bdca633322 Mon Sep 17 00:00:00 2001
+From: 916BGAI <zhangjian@sipeed.com>
+Date: Thu, 27 Feb 2025 16:02:55 +0800
+Subject: [PATCH 3/3] fix emmc boot fail
+
+---
+ arch/arm/mach-sunxi/dram_sun50i_h616.c | 2 ++
+ drivers/mmc/sunxi_mmc.c                | 6 +++---
+ 2 files changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/arch/arm/mach-sunxi/dram_sun50i_h616.c b/arch/arm/mach-sunxi/dram_sun50i_h616.c
+index 2c4b47bae7f..6f04a6f8e2b 100644
+--- a/arch/arm/mach-sunxi/dram_sun50i_h616.c
++++ b/arch/arm/mach-sunxi/dram_sun50i_h616.c
+@@ -1351,6 +1351,8 @@ unsigned long sunxi_dram_init(void)
+ 	struct dram_config config;
+ 	unsigned long size;
+ 
++	udelay(1000);
++
+ 	setbits_le32(&prcm->res_cal_ctrl, BIT(8));
+ 	clrbits_le32(&prcm->ohms240, 0x3f);
+ 
+diff --git a/drivers/mmc/sunxi_mmc.c b/drivers/mmc/sunxi_mmc.c
+index 074b08ac5d8..94918465d00 100644
+--- a/drivers/mmc/sunxi_mmc.c
++++ b/drivers/mmc/sunxi_mmc.c
+@@ -541,7 +541,7 @@ struct mmc *sunxi_mmc_init(int sdc_no)
+ 	cfg->f_max = 52000000;
+ 
+ 	if(sdc_no==2) {
+-		cfg->f_max = 20000000;
++		cfg->f_max = 12000000;
+ 	}
+ 
+ 	if (mmc_resource_init(sdc_no) != 0)
+@@ -657,7 +657,7 @@ static int sunxi_mmc_probe(struct udevice *dev)
+ 		return ret;
+ 
+ 	if (bus_width == 8) {
+-		cfg->f_max = 20000000;
++		cfg->f_max = 12000000;
+ 	}
+ 
+ 	priv->reg = dev_read_addr_ptr(dev);
+@@ -692,7 +692,7 @@ static int sunxi_mmc_probe(struct udevice *dev)
+ 
+ 	/* Reset controller */
+ 	writel(SUNXI_MMC_GCTRL_RESET, &priv->reg->gctrl);
+-	udelay(1000);
++	udelay(20000);
+ 
+ 	return 0;
+ }
+-- 
+2.48.1
+
