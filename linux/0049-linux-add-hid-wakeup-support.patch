@@ -1,0 +1,179 @@
+From 360333467dbe46a90b99ab118094d170028a8be9 Mon Sep 17 00:00:00 2001
+From: Mk16kawai <1041324852hzq@sina.com>
+Date: Tue, 18 Feb 2025 17:52:20 +0800
+Subject: [PATCH] [linux] Add HID wakeup support
+
+---
+ drivers/usb/dwc2/gadget.c           | 62 +++++++++++++++++++++++++++++
+ drivers/usb/gadget/function/f_hid.c | 16 ++++++++
+ drivers/usb/gadget/function/u_hid.h |  1 +
+ drivers/usb/gadget/legacy/hid.c     |  2 +-
+ 4 files changed, 80 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/usb/dwc2/gadget.c b/drivers/usb/dwc2/gadget.c
+index b517a7216..195224ad4 100644
+--- a/drivers/usb/dwc2/gadget.c
++++ b/drivers/usb/dwc2/gadget.c
+@@ -4361,6 +4361,67 @@ static int dwc2_gadget_ep_set_wedge(struct usb_ep *ep)
+ 	return ret;
+ }
+ 
++/**
++ * dwc2_hsotg_wakeup - send wakeup signal to the host
++ * @gadget: The usb gadget state
++ *
++ * If the gadget is in device mode and in the L1 or L2 state,
++ * it sends a wakeup signal to the host.
++ */
++static int dwc2_hsotg_wakeup(struct usb_gadget *gadget)
++{
++	struct dwc2_hsotg *hsotg = to_hsotg(gadget);
++	int ret = -1;
++	unsigned long flags;
++	spin_lock_irqsave(&hsotg->lock, flags);
++	if (!hsotg->remote_wakeup_allowed) {
++		dev_info(hsotg->dev,
++			"wakeup: signalling skipped: is not allowed by host\n");
++		goto skip;
++	}
++	if (hsotg->lx_state != DWC2_L1 && hsotg->lx_state != DWC2_L2) {
++		dev_info(hsotg->dev,
++			"wakeup: signalling skipped: gadget not in L1/L2 state: %d\n", hsotg->lx_state);
++		goto skip;
++	}
++	if (!dwc2_is_device_mode(hsotg)) {
++		dev_info(hsotg->dev,
++			"wakeup: signalling skipped: gadget not in device mode\n");
++		goto skip;
++	}
++	/*if (hsotg->in_ppd) {
++		if (dwc2_exit_partial_power_down(hsotg, 1, true))
++			dev_err(hsotg->dev, "wakeup: exit partial_power_down failed\n");
++		call_gadget(hsotg, resume);
++	}*/
++	if (hsotg->params.power_down == DWC2_POWER_DOWN_PARAM_NONE && hsotg->bus_suspended) {
++		u32 pcgctl;
++		dev_info(hsotg->dev, "wakeup: exiting device clock gating\n");
++		/* Clear the Gate hclk. */
++		pcgctl = dwc2_readl(hsotg, PCGCTL);
++		pcgctl &= ~PCGCTL_GATEHCLK;
++		dwc2_writel(hsotg, pcgctl, PCGCTL);
++		udelay(5);
++		/* Phy Clock bit. */
++		pcgctl = dwc2_readl(hsotg, PCGCTL);
++		pcgctl &= ~PCGCTL_STOPPCLK;
++		dwc2_writel(hsotg, pcgctl, PCGCTL);
++		udelay(5);
++		hsotg->bus_suspended = false;
++	}
++	dev_info(hsotg->dev, "wakeup: sending signal to the host");
++	dwc2_set_bit(hsotg, DCTL, DCTL_RMTWKUPSIG);
++	mdelay(10);
++	dwc2_clear_bit(hsotg, DCTL, DCTL_RMTWKUPSIG);
++	/* After the signalling, the USB core wakes up to L0 */
++	call_gadget(hsotg, resume);
++	hsotg->lx_state = DWC2_L0;
++	ret = 0;
++skip:
++	spin_unlock_irqrestore(&hsotg->lock, flags);
++	return ret;
++}
++
+ /**
+  * dwc2_hsotg_ep_sethalt - set halt on a given endpoint
+  * @ep: The endpoint to set halt.
+@@ -4771,6 +4832,7 @@ static const struct usb_gadget_ops dwc2_hsotg_gadget_ops = {
+ 	.udc_set_speed		= dwc2_gadget_set_speed,
+ 	.vbus_session		= dwc2_hsotg_vbus_session,
+ 	.vbus_draw		= dwc2_hsotg_vbus_draw,
++	.wakeup			= dwc2_hsotg_wakeup,
+ };
+ 
+ /**
+diff --git a/drivers/usb/gadget/function/f_hid.c b/drivers/usb/gadget/function/f_hid.c
+index ea85e2c70..bd41d94a6 100644
+--- a/drivers/usb/gadget/function/f_hid.c
++++ b/drivers/usb/gadget/function/f_hid.c
+@@ -49,6 +49,7 @@ struct f_hidg {
+ 	unsigned short			report_desc_length;
+ 	char				*report_desc;
+ 	unsigned short			report_length;
++	bool				wakeup_on_write;
+ 	/*
+ 	 * use_out_ep - if true, the OUT Endpoint (interrupt out method)
+ 	 *              will be used to receive reports from the host
+@@ -434,10 +435,22 @@ static ssize_t f_hidg_write(struct file *file, const char __user *buffer,
+ 			    size_t count, loff_t *offp)
+ {
+ 	struct f_hidg *hidg  = file->private_data;
++	struct usb_composite_dev *cdev = hidg->func.config->cdev;
+ 	struct usb_request *req;
+ 	unsigned long flags;
+ 	ssize_t status = -ENOMEM;
+ 
++	/*
++	 * remote wakeup is allowed only when the corresponding bit
++	 * in config descriptor is set and wakeup_on_write is enabled.
++     * FIXME: cdev->config can be NULLed on disconnect.
++	 */
++	if (hidg->wakeup_on_write /*&& cdev->config->bmAttributes & 0x20*/){
++		usb_gadget_wakeup(cdev->gadget);
++		ERROR(hidg->func.config->cdev,
++			"usb_gadget_wakeup\n");
++	}
++
+ 	spin_lock_irqsave(&hidg->write_spinlock, flags);
+ 
+ 	if (!hidg->req) {
+@@ -1102,6 +1115,7 @@ F_HID_OPT(subclass, 8, 255);
+ F_HID_OPT(protocol, 8, 255);
+ F_HID_OPT(no_out_endpoint, 8, 1);
+ F_HID_OPT(report_length, 16, 65535);
++F_HID_OPT(wakeup_on_write, 8, 1);
+ 
+ static ssize_t f_hid_opts_report_desc_show(struct config_item *item, char *page)
+ {
+@@ -1160,6 +1174,7 @@ CONFIGFS_ATTR_RO(f_hid_opts_, dev);
+ static struct configfs_attribute *hid_attrs[] = {
+ 	&f_hid_opts_attr_subclass,
+ 	&f_hid_opts_attr_protocol,
++	&f_hid_opts_attr_wakeup_on_write,
+ 	&f_hid_opts_attr_no_out_endpoint,
+ 	&f_hid_opts_attr_report_length,
+ 	&f_hid_opts_attr_report_desc,
+@@ -1296,6 +1311,7 @@ static struct usb_function *hidg_alloc(struct usb_function_instance *fi)
+ 		}
+ 	}
+ 	hidg->use_out_ep = !opts->no_out_endpoint;
++	hidg->wakeup_on_write = opts->wakeup_on_write;
+ 
+ 	++opts->refcnt;
+ 	mutex_unlock(&opts->lock);
+diff --git a/drivers/usb/gadget/function/u_hid.h b/drivers/usb/gadget/function/u_hid.h
+index 84bb70292..4e3bb73d7 100644
+--- a/drivers/usb/gadget/function/u_hid.h
++++ b/drivers/usb/gadget/function/u_hid.h
+@@ -20,6 +20,7 @@ struct f_hid_opts {
+ 	int				minor;
+ 	unsigned char			subclass;
+ 	unsigned char			protocol;
++	unsigned char			wakeup_on_write;
+ 	unsigned char			no_out_endpoint;
+ 	unsigned short			report_length;
+ 	unsigned short			report_desc_length;
+diff --git a/drivers/usb/gadget/legacy/hid.c b/drivers/usb/gadget/legacy/hid.c
+index 4ca67b2f8..d34b3e040 100644
+--- a/drivers/usb/gadget/legacy/hid.c
++++ b/drivers/usb/gadget/legacy/hid.c
+@@ -125,7 +125,7 @@ static struct usb_configuration config_driver = {
+ 	.label			= "HID Gadget",
+ 	.bConfigurationValue	= 1,
+ 	/* .iConfiguration = DYNAMIC */
+-	.bmAttributes		= USB_CONFIG_ATT_SELFPOWER,
++	.bmAttributes		= USB_CONFIG_ATT_SELFPOWER | USB_CONFIG_ATT_WAKEUP,
+ };
+ 
+ /****************************** Gadget Bind ******************************/
+-- 
+2.34.1
+
