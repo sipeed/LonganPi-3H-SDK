@@ -1,0 +1,67 @@
+From 27ed9a3e4b56d02941412d6e31439f366fc107b3 Mon Sep 17 00:00:00 2001
+From: 916BGAI <zhangjian@sipeed.com>
+Date: Thu, 27 Feb 2025 16:00:08 +0800
+Subject: [PATCH 2/3] add a boot button to trigger ums
+
+---
+ arch/arm/dts/sun50i-h618-longanpi-3h.dts | 11 +++++++++++
+ board/sunxi/board.c                      | 14 ++++++++++++++
+ 2 files changed, 25 insertions(+)
+
+diff --git a/arch/arm/dts/sun50i-h618-longanpi-3h.dts b/arch/arm/dts/sun50i-h618-longanpi-3h.dts
+index b1160037c69..f03610b2a9a 100644
+--- a/arch/arm/dts/sun50i-h618-longanpi-3h.dts
++++ b/arch/arm/dts/sun50i-h618-longanpi-3h.dts
+@@ -40,6 +40,17 @@
+ 		regulator-max-microvolt = <5000000>;
+ 		regulator-always-on;
+ 	};
++
++	gpio-keys {
++        compatible = "gpio-keys";
++        autorepeat;
++
++        key-boot {
++            label = "Boot";
++            linux,code = <103>;
++			gpios = <&pio 6 8 GPIO_ACTIVE_LOW>;
++        };
++    };
+ };
+ 
+ &ehci1 {
+diff --git a/board/sunxi/board.c b/board/sunxi/board.c
+index e82650023c7..c803bf7810a 100644
+--- a/board/sunxi/board.c
++++ b/board/sunxi/board.c
+@@ -50,6 +50,8 @@
+ #include <sy8106a.h>
+ #include <asm/setup.h>
+ #include <status_led.h>
++#include <button.h>
++#include <command.h>
+ 
+ DECLARE_GLOBAL_DATA_PTR;
+ 
+@@ -852,6 +854,18 @@ int board_late_init(void)
+ 	sunxi_gpio_set_cfgpin(SUNXI_GPA(12), 2);
+ #endif
+ 
++	struct udevice *dev;
++	int ret = button_get_by_label("Boot", &dev);
++	if (ret) {
++		printf("Button 'Boot' not found (err=%d)\n", ret);
++		return ret;
++	}
++	ret = button_get_state(dev);
++	if (ret >= BUTTON_COUNT)
++		ret = -EINVAL;
++	if (ret == BUTTON_ON)
++		run_command("ums 0 mmc 1", 0);
++
+ 	return 0;
+ }
+ 
+-- 
+2.48.1
+
