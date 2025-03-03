@@ -1,12 +1,13 @@
-From 27ed9a3e4b56d02941412d6e31439f366fc107b3 Mon Sep 17 00:00:00 2001
+From a5681824ddebb0ff7a52d25389b1b44db7baa431 Mon Sep 17 00:00:00 2001
 From: 916BGAI <zhangjian@sipeed.com>
-Date: Thu, 27 Feb 2025 16:00:08 +0800
-Subject: [PATCH 2/3] add a boot button to trigger ums
+Date: Mon, 3 Mar 2025 09:47:47 +0800
+Subject: [PATCH 1/2] add a boot button to trigger ums
 
 ---
  arch/arm/dts/sun50i-h618-longanpi-3h.dts | 11 +++++++++++
  board/sunxi/board.c                      | 14 ++++++++++++++
- 2 files changed, 25 insertions(+)
+ configs/longanpi_3h_defconfig            |  5 ++++-
+ 3 files changed, 29 insertions(+), 1 deletion(-)
 
 diff --git a/arch/arm/dts/sun50i-h618-longanpi-3h.dts b/arch/arm/dts/sun50i-h618-longanpi-3h.dts
 index b1160037c69..f03610b2a9a 100644
@@ -62,6 +63,29 @@ index e82650023c7..c803bf7810a 100644
  	return 0;
  }
  
+diff --git a/configs/longanpi_3h_defconfig b/configs/longanpi_3h_defconfig
+index 0449b39b2d5..1e63f99f796 100644
+--- a/configs/longanpi_3h_defconfig
++++ b/configs/longanpi_3h_defconfig
+@@ -854,6 +854,7 @@ CONFIG_CMD_PING=y
+ # CONFIG_CMD_2048 is not set
+ # CONFIG_CMD_BSP is not set
+ CONFIG_CMD_BLOCK_CACHE=y
++CONFIG_CMD_BUTTON=y
+ # CONFIG_CMD_CACHE is not set
+ # CONFIG_CMD_CONITRACE is not set
+ # CONFIG_CMD_CLS is not set
+@@ -1089,7 +1090,9 @@ CONFIG_BLOCK_CACHE=y
+ #
+ # Button Support
+ #
+-# CONFIG_BUTTON is not set
++CONFIG_BUTTON=y
++# CONFIG_BUTTON_ADC is not set
++CONFIG_BUTTON_GPIO=y
+ 
+ #
+ # Cache Controller drivers
 -- 
 2.48.1
 
