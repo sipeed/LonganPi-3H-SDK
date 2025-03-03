@@ -1,7 +1,6 @@
 #!/bin/bash
 
-if [ ! -e ./build/rootfs.tar ]
-then
+if [ ! -e ./build/rootfs.tar ]; then
     echo "./build/rootfs.tar not found"
     exit 1
 fi
@@ -24,17 +23,18 @@ cp -v ./build/u-boot-sunxi-with-spl.bin ./build/input/
 dd if=/dev/zero of=./build/input/rootfs.ext4 bs=1M count=3000
 
 mkfs.ext4 -L lpi3h-root ./build/input/rootfs.ext4
+dd if=/dev/zero of=./build/input/data.exfat bs=1M count=32
+mkfs.exfat ./build/input/data.exfat
 mkdir -pv ./build/rootfs
 
-if [ `id -u` -ne 0 ]
-then
-	fuse2fs -o fakeroot ./build/input/rootfs.ext4 ./build/rootfs
-	fakeroot -- tar --numeric-owner -xpf build/rootfs.tar -C ./build/rootfs/
-	sudo umount ./build/rootfs
+if [ $(id -u) -ne 0 ]; then
+    fuse2fs -o fakeroot ./build/input/rootfs.ext4 ./build/rootfs
+    fakeroot -- tar --numeric-owner -xpf build/rootfs.tar -C ./build/rootfs/
+    sudo umount ./build/rootfs
 else
-	mount ./build/input/rootfs.ext4 ./build/rootfs/
-	tar --numeric-owner -xpf build/rootfs.tar -C ./build/rootfs/
-	umount ./build/rootfs
+    mount ./build/input/rootfs.ext4 ./build/rootfs/
+    tar --numeric-owner -xpf build/rootfs.tar -C ./build/rootfs/
+    umount ./build/rootfs
 fi
 
 cp -v genimage.cfg ./build/
