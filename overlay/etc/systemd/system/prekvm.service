@@ -1,0 +1,11 @@
+[Unit]
+Description=Custom Background Service
+After=local-fs.target
+
+[Service]
+Type=simple
+ExecStart=/opt/kvm/prekvm.sh
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
