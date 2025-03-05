@@ -1,0 +1,32 @@
+From 0f04a7a4536385d8f0093ca3bdbcad64601b0906 Mon Sep 17 00:00:00 2001
+From: 916BGAI <zhangjian@sipeed.com>
+Date: Wed, 5 Mar 2025 17:40:45 +0800
+Subject: [PATCH] disable emac1 link led to avoid conflict with PH2,PH3
+
+---
+ drivers/net/phy/phy.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+index 0cb71d9caf7..d96317dff69 100644
+--- a/drivers/net/phy/phy.c
++++ b/drivers/net/phy/phy.c
+@@ -514,6 +514,15 @@ int genphy_config(struct phy_device *phydev)
+ 		val &= ~(0x0f << 12);
+ 		val |= (0x0f & (0x03 + (0xffff & val))) << 12;
+ 		phy_write(phydev, MDIO_DEVAD_NONE, 6, val);
++
++		val = phy_read(phydev, MDIO_DEVAD_NONE, 0x06);
++		val &= ~(1 << 1);
++		phy_write(phydev, MDIO_DEVAD_NONE, 0x06, val);
++
++		val = phy_read(phydev, MDIO_DEVAD_NONE, 0x05);
++		val &= ~(1 << 2);
++		phy_write(phydev, MDIO_DEVAD_NONE, 0x05, val);
++
+ 		if ((0xffff & val) & 0x200) {
+ 			printf("using AC300 emac1 ephy fixed config ...\n");
+ 			ephy_config_fixed(phydev);
+-- 
+2.48.1
+
