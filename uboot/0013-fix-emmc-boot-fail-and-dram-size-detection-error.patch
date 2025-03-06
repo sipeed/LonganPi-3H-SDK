@@ -1,0 +1,250 @@
+From d70b4a1455a86c792ac722f90867bb4c40717339 Mon Sep 17 00:00:00 2001
+From: 916BGAI <zhangjian@sipeed.com>
+Date: Thu, 6 Mar 2025 10:57:15 +0800
+Subject: [PATCH 1/2] fix emmc boot fail and dram size detection error
+
+---
+ arch/arm/include/asm/arch-sunxi/mmc.h  | 17 +++++++--
+ arch/arm/mach-sunxi/dram_helpers.c     |  1 +
+ arch/arm/mach-sunxi/dram_sun50i_h616.c | 53 ++++++++++++++++++++++++--
+ drivers/mmc/sunxi_mmc.c                | 41 +++++++++++++-------
+ 4 files changed, 91 insertions(+), 21 deletions(-)
+
+diff --git a/arch/arm/include/asm/arch-sunxi/mmc.h b/arch/arm/include/asm/arch-sunxi/mmc.h
+index 8ed3e0459c..085fea7fef 100644
+--- a/arch/arm/include/asm/arch-sunxi/mmc.h
++++ b/arch/arm/include/asm/arch-sunxi/mmc.h
+@@ -34,10 +34,12 @@ struct sunxi_mmc {
+ 	u32 cbcr;		/* 0x48 CIU byte count */
+ 	u32 bbcr;		/* 0x4c BIU byte count */
+ 	u32 dbgc;		/* 0x50 debug enable */
+-	u32 res0;		/* 0x54 reserved */
++	u32 csdc;		/* 0x54 crc status detect */
+ 	u32 a12a;		/* 0x58 Auto command 12 argument */
+ 	u32 ntsr;		/* 0x5c	New timing set register */
+-	u32 res1[8];
++	u32 res1[6];
++	u32 hwrst;		/* 0x78 Hardware Reset */
++	u32 res5;
+ 	u32 dmac;		/* 0x80 internal DMA control */
+ 	u32 dlba;		/* 0x84 internal DMA descr list base address */
+ 	u32 idst;		/* 0x88 internal DMA status */
+@@ -46,7 +48,8 @@ struct sunxi_mmc {
+ 	u32 cbda;		/* 0x94 */
+ 	u32 res2[26];
+ #if defined(CONFIG_SUNXI_GEN_SUN6I) || defined(CONFIG_SUN50I_GEN_H6) || defined(CONFIG_SUNXI_GEN_NCAT2)
+-	u32 res3[17];
++	u32 thldc;		/* 0x100 Threshold control */
++	u32 res3[16];
+ 	u32 samp_dl;
+ 	u32 res4[46];
+ #endif
+@@ -123,6 +126,9 @@ struct sunxi_mmc {
+ 
+ #define SUNXI_MMC_NTSR_MODE_SEL_NEW		(0x1 << 31)
+ 
++#define SUNXI_MMC_HWRST_ASSERT		(0x0 << 0)
++#define SUNXI_MMC_HWRST_DEASSERT	(0x1 << 0)
++
+ #define SUNXI_MMC_IDMAC_RESET		(0x1 << 0)
+ #define SUNXI_MMC_IDMAC_FIXBURST	(0x1 << 1)
+ #define SUNXI_MMC_IDMAC_ENABLE		(0x1 << 7)
+@@ -133,6 +139,11 @@ struct sunxi_mmc {
+ #define SUNXI_MMC_COMMON_CLK_GATE		(1 << 16)
+ #define SUNXI_MMC_COMMON_RESET			(1 << 18)
+ 
++#define SUNXI_MMC_THLDC_READ_EN		(0x1 << 0)
++#define SUNXI_MMC_THLDC_BSY_CLR_INT_EN	(0x1 << 1)
++#define SUNXI_MMC_THLDC_WRITE_EN	(0x1 << 2)
++#define SUNXI_MMC_THLDC_READ_THLD(x)	(((x) & 0xfff) << 16)
++
+ #define SUNXI_MMC_CAL_DL_SW_EN		(0x1 << 7)
+ 
+ struct mmc *sunxi_mmc_init(int sdc_no);
+diff --git a/arch/arm/mach-sunxi/dram_helpers.c b/arch/arm/mach-sunxi/dram_helpers.c
+index cdf2750f1c..16938fab21 100644
+--- a/arch/arm/mach-sunxi/dram_helpers.c
++++ b/arch/arm/mach-sunxi/dram_helpers.c
+@@ -34,6 +34,7 @@ bool mctl_mem_matches(u32 offset)
+ {
+ 	/* Try to write different values to RAM at two addresses */
+ 	writel(0, CFG_SYS_SDRAM_BASE);
++	dsb();
+ 	writel(0xaa55aa55, (ulong)CFG_SYS_SDRAM_BASE + offset);
+ 	dsb();
+ 	/* Check if the same value is actually observed when reading back */
+diff --git a/arch/arm/mach-sunxi/dram_sun50i_h616.c b/arch/arm/mach-sunxi/dram_sun50i_h616.c
+index 2c4b47bae7..2b0323691b 100644
+--- a/arch/arm/mach-sunxi/dram_sun50i_h616.c
++++ b/arch/arm/mach-sunxi/dram_sun50i_h616.c
+@@ -1288,31 +1288,76 @@ static void mctl_auto_detect_rank_width(const struct dram_para *para,
+ 	panic("This DRAM setup is currently not supported.\n");
+ }
+ 
++static void mctl_write_pattern(void)
++{
++	unsigned int i;
++	u32 *ptr, val;
++
++	ptr = (u32*)CFG_SYS_SDRAM_BASE;
++	for (i = 0; i < 16; ptr++, i++) {
++		if (i & 1)
++			val = ~(ulong)ptr;
++		else
++			val = (ulong)ptr;
++		writel(val, ptr);
++	}
++}
++
++static bool mctl_check_pattern(ulong offset)
++{
++	unsigned int i;
++	u32 *ptr, val;
++
++	ptr = (u32*)CFG_SYS_SDRAM_BASE;
++	for (i = 0; i < 16; ptr++, i++) {
++		if (i & 1)
++			val = ~(ulong)ptr;
++		else
++			val = (ulong)ptr;
++		if (val != *(ptr + offset / 4))
++			return false;
++	}
++
++	return true;
++}
++
+ static void mctl_auto_detect_dram_size(const struct dram_para *para,
+ 				       struct dram_config *config)
+ {
++	u32 buffer[16];
++
+ 	/* detect row address bits */
+ 	config->cols = 8;
+-	config->rows = 18;
++	config->rows = 16;
+ 	mctl_core_init(para, config);
+ 
+-	for (config->rows = 13; config->rows < 18; config->rows++) {
++	memcpy(buffer, (u32*)CFG_SYS_SDRAM_BASE, sizeof(buffer));
++	mctl_write_pattern();
++
++	for (config->rows = 13; config->rows < 16; config->rows++) {
+ 		/* 8 banks, 8 bit per byte and 16/32 bit width */
+-		if (mctl_mem_matches((1 << (config->rows + config->cols +
++		if (mctl_check_pattern((1 << (config->rows + config->cols +
+ 					    4 + config->bus_full_width))))
+ 			break;
+ 	}
+ 
++	memcpy((u32*)CFG_SYS_SDRAM_BASE, buffer, sizeof(buffer));
++
+ 	/* detect column address bits */
+ 	config->cols = 11;
+ 	mctl_core_init(para, config);
+ 
++	memcpy(buffer, (u32*)CFG_SYS_SDRAM_BASE, sizeof(buffer));
++	mctl_write_pattern();
++
+ 	for (config->cols = 8; config->cols < 11; config->cols++) {
+ 		/* 8 bits per byte and 16/32 bit width */
+-		if (mctl_mem_matches(1 << (config->cols + 1 +
++		if (mctl_check_pattern(1 << (config->cols + 1 +
+ 					   config->bus_full_width)))
+ 			break;
+ 	}
++
++	memcpy((u32*)CFG_SYS_SDRAM_BASE, buffer, sizeof(buffer));
+ }
+ 
+ static unsigned long mctl_calc_size(const struct dram_config *config)
+diff --git a/drivers/mmc/sunxi_mmc.c b/drivers/mmc/sunxi_mmc.c
+index 074b08ac5d..b93a60f1aa 100644
+--- a/drivers/mmc/sunxi_mmc.c
++++ b/drivers/mmc/sunxi_mmc.c
+@@ -374,6 +374,7 @@ static int sunxi_mmc_send_cmd_common(struct sunxi_mmc_priv *priv,
+ 
+ 		bytecnt = data->blocksize * data->blocks;
+ 		debug("trans data %d bytes\n", bytecnt);
++		setbits_le32(&priv->reg->gctrl, SUNXI_MMC_GCTRL_ACCESS_BY_AHB);
+ 		writel(cmdval | cmd->cmdidx, &priv->reg->cmd);
+ 		ret = mmc_trans_data_by_cpu(priv, mmc, data);
+ 		if (ret) {
+@@ -439,6 +440,30 @@ out:
+ 	return error;
+ }
+ 
++static void sunxi_mmc_reset(struct sunxi_mmc *regs)
++{
++	/* Reset controller */
++	writel(SUNXI_MMC_GCTRL_RESET, &regs->gctrl);
++	udelay(1000);
++
++	if (IS_ENABLED(CONFIG_SUN50I_GEN_H6) || IS_ENABLED(CONFIG_SUNXI_GEN_NCAT2)) {
++		/* Reset card */
++		writel(SUNXI_MMC_HWRST_ASSERT, &regs->hwrst);
++		udelay(10);
++		writel(SUNXI_MMC_HWRST_DEASSERT, &regs->hwrst);
++		udelay(300);
++
++		/* Setup FIFO R/W threshold. Needed on H616. */
++		writel(SUNXI_MMC_THLDC_READ_THLD(512) |
++		       SUNXI_MMC_THLDC_WRITE_EN |
++		       SUNXI_MMC_THLDC_READ_EN, &regs->thldc);
++
++		writel((0xffffffU << 8) | 0xff, &regs->timeout);
++		writel(3, &regs->csdc);
++		writel(0xdeb, &regs->dbgc);
++	}
++}
++
+ /* non-DM code here is used by the (ARM) SPL only */
+ 
+ #if !CONFIG_IS_ENABLED(DM_MMC)
+@@ -486,9 +511,7 @@ static int sunxi_mmc_core_init(struct mmc *mmc)
+ {
+ 	struct sunxi_mmc_priv *priv = mmc->priv;
+ 
+-	/* Reset controller */
+-	writel(SUNXI_MMC_GCTRL_RESET, &priv->reg->gctrl);
+-	udelay(1000);
++	sunxi_mmc_reset(priv->reg);
+ 
+ 	return 0;
+ }
+@@ -540,10 +563,6 @@ struct mmc *sunxi_mmc_init(int sdc_no)
+ 	cfg->f_min = 400000;
+ 	cfg->f_max = 52000000;
+ 
+-	if(sdc_no==2) {
+-		cfg->f_max = 20000000;
+-	}
+-
+ 	if (mmc_resource_init(sdc_no) != 0)
+ 		return NULL;
+ 
+@@ -656,10 +675,6 @@ static int sunxi_mmc_probe(struct udevice *dev)
+ 	if (ret)
+ 		return ret;
+ 
+-	if (bus_width == 8) {
+-		cfg->f_max = 20000000;
+-	}
+-
+ 	priv->reg = dev_read_addr_ptr(dev);
+ 
+ 	/* We don't have a sunxi clock driver so find the clock address here */
+@@ -690,9 +705,7 @@ static int sunxi_mmc_probe(struct udevice *dev)
+ 
+ 	upriv->mmc = &plat->mmc;
+ 
+-	/* Reset controller */
+-	writel(SUNXI_MMC_GCTRL_RESET, &priv->reg->gctrl);
+-	udelay(1000);
++	sunxi_mmc_reset(priv->reg);
+ 
+ 	return 0;
+ }
+-- 
+2.48.1
+
