@@ -30,6 +30,8 @@ echo "$NEW_HOSTNAME" > /etc/hostname
 echo "127.0.0.1	$NEW_HOSTNAME" >> /etc/hosts
 hostname "$NEW_HOSTNAME"
 nmcli general hostname "$NEW_HOSTNAME"
+systemctl disable systemd-networkd-wait-online.service
+systemctl stop systemd-networkd-wait-online.service
 systemctl enable avahi-daemon
 systemctl restart avahi-daemon &
 
