@@ -6,6 +6,14 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
+if id "kvmd" &>/dev/null; then
+    _UID=$(id -u kvmd)
+    _GID=$(id -g kvmd)
+else
+    _UID=0
+    _GID=0
+fi
+
 # Define the target disk (modify according to actual situation)
 DISK=$(ls /dev/mmcblk* | grep boot | head -n 1 | sed -e 's/boot0//g')
 TARGET_PARTITION="" # Store the detected target partition
@@ -73,7 +81,7 @@ mount_datafs() {
 
     if ! mountpoint -q "$TARGET_DIR"; then
         echo "Trying to mount partition $TARGET_PARTITION to $TARGET_DIR..."
-        mount "$TARGET_PARTITION" "$TARGET_DIR"
+        mount -o uid=$_UID,gid=$_GID "$TARGET_PARTITION" "$TARGET_DIR"
         if [ $? -eq 0 ]; then
             echo "Mounting was successful!"
             df -h | grep "$TARGET_DIR"
