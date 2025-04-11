@@ -46,19 +46,19 @@ if [ -z "$KVM_PACKAGE" ]; then
     libwebsockets17 libwebsockets-dev libjansson4 libogg0 libopus0 libssl3 \
     libsystemd0 zlib1g libconfig9 libcurl4 libduktape207 libxkbcommon0 \
     xkb-data libevent-2.1-7 libx264-164 libx264-dev libyuv-dev libyuv0 \
-    isc-dhcp-server"
+    isc-dhcp-server arp-scan hostapd"
 fi
 
 case "$1" in
-    "kvm")
-        DESKTOP_PACKAGE=""
-        ;;
-    "nogui")
-        DESKTOP_PACKAGE=""
-        ;&
-    *)
-        KVM_PACKAGE=""
-        ;;
+"kvm")
+    DESKTOP_PACKAGE=""
+    ;;
+"nogui")
+    DESKTOP_PACKAGE=""
+    ;&
+*)
+    KVM_PACKAGE=""
+    ;;
 esac
 
 mkdir build
