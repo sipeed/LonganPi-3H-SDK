@@ -1,0 +1,40 @@
+From 5e43ddcb0fefdb3c44db5f31b19cf4353226e8a0 Mon Sep 17 00:00:00 2001
+From: 916BGAI <zhangjian@sipeed.com>
+Date: Thu, 29 May 2025 11:37:38 +0800
+Subject: [PATCH] add pca9557 gpio support
+
+---
+ .../boot/dts/allwinner/sun50i-h618-longanpi-3h.dts   | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h618-longanpi-3h.dts b/arch/arm64/boot/dts/allwinner/sun50i-h618-longanpi-3h.dts
+index 6f5b985a6..35db44372 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h618-longanpi-3h.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h618-longanpi-3h.dts
+@@ -217,13 +217,21 @@ display: st7789t3@1{
+ 
+ &i2c3 {
+ 	pinctrl-0 = <&i2c3_pg_pins>;
++	pinctrl-names = "default";
+ 	status = "okay";
++
++	gpio: gpio@18 {
++		compatible = "nxp,pca9557";
++		reg = <0x18>;
++		gpio-controller;
++		#gpio-cells = <2>;
++	};
+ };
+ 
+ &i2c4 {
+-	status = "okay";
+-	pinctrl-names = "default";
+ 	pinctrl-0 = <&i2c4_pg_pins>;
++	pinctrl-names = "default";
++	status = "okay";
+ 	clock-frequency = <400000>;
+ };
+ 
+-- 
+2.49.0
+
