@@ -24,7 +24,7 @@ echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen
 locale-gen
 
 # change hostname
-NEW_HOSTNAME="lpi3h-$(cat /sys/class/net/end0/address | tr -d ':\n' | tail -c 4)"
+NEW_HOSTNAME="lpi3h-$(cat /sys/class/net/end1/address | tr -d ':\n' | tail -c 4)"
 echo "NEW HOSTNAME: $NEW_HOSTNAME"
 echo "$NEW_HOSTNAME" > /etc/hostname
 echo "127.0.0.1	$NEW_HOSTNAME" >> /etc/hosts

@@ -1,0 +1,40 @@
+From 3efea11fb51b6884e93db3c436d8f353f7b8ec3c Mon Sep 17 00:00:00 2001
+From: 916BGAI <zhangjian@sipeed.com>
+Date: Fri, 18 Jul 2025 11:34:00 +0800
+Subject: [PATCH] add cgroup CPUACCT and cfs bandwidth
+
+---
+ arch/arm64/configs/longanpi_3h_defconfig | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/arch/arm64/configs/longanpi_3h_defconfig b/arch/arm64/configs/longanpi_3h_defconfig
+index 1748e770b..93bd9c613 100644
+--- a/arch/arm64/configs/longanpi_3h_defconfig
++++ b/arch/arm64/configs/longanpi_3h_defconfig
+@@ -10,10 +10,12 @@ CONFIG_IKCONFIG=y
+ CONFIG_LOG_CPU_MAX_BUF_SHIFT=17
+ CONFIG_MEMCG=y
+ CONFIG_BLK_CGROUP=y
++CONFIG_CFS_BANDWIDTH=y
+ CONFIG_CGROUP_PIDS=y
+ CONFIG_CGROUP_FREEZER=y
+ CONFIG_CPUSETS=y
+ CONFIG_CGROUP_DEVICE=y
++CONFIG_CGROUP_CPUACCT=y
+ CONFIG_CGROUP_PERF=y
+ CONFIG_CGROUP_BPF=y
+ CONFIG_CGROUP_MISC=y
+@@ -89,6 +91,10 @@ CONFIG_ARM_PSCI_CPUIDLE=y
+ CONFIG_CPU_FREQ=y
+ CONFIG_CPU_FREQ_STAT=y
+ CONFIG_CPU_FREQ_DEFAULT_GOV_ONDEMAND=y
++CONFIG_CPU_FREQ_GOV_POWERSAVE=y
++CONFIG_CPU_FREQ_GOV_USERSPACE=y
++CONFIG_CPU_FREQ_GOV_CONSERVATIVE=y
++CONFIG_CPU_FREQ_GOV_SCHEDUTIL=y
+ CONFIG_CPUFREQ_DT=y
+ CONFIG_ARM_ALLWINNER_SUN50I_CPUFREQ_NVMEM=y
+ # CONFIG_STACKPROTECTOR is not set
+-- 
+2.50.1
+
