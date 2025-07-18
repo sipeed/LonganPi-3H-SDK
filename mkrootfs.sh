@@ -27,7 +27,7 @@ BASE_PACKAGE="ca-certificates locales dosfstools binutils file \
     bluez bluez-hcidump bluez-tools btscanner bluez-alsa-utils \
     device-tree-compiler debian-archive-keyring linux-cpupower \
     network-manager exfatprogs cloud-guest-utils xfsprogs rsync neovim \
-    xz-utils curl"
+    xz-utils curl avahi-utils libnss-mdns sshpass python3-requests git"
 
 if [ -z "$DESKTOP_PACKAGE" ]; then
     DESKTOP_PACKAGE="chromium task-xfce-desktop \
@@ -38,7 +38,7 @@ fi
 
 if [ -z "$KVM_PACKAGE" ]; then
     KVM_PACKAGE="nginx bc expect v4l-utils iptables nfs-common dialog \
-    iptables dnsmasq git tesseract-ocr tesseract-ocr-eng libasound2-dev \
+    iptables dnsmasq tesseract-ocr tesseract-ocr-eng libasound2-dev \
     libsndfile-dev libspeexdsp-dev libdrm-dev libdbus-1-dev libglib2.0-dev \
     libsystemd-dev libevent-pthreads-2.1-7 libgssdp-1.6-0 libgupnp-1.6-0 \
     libgupnp-igd-1.0-4 liblua5.3-0 libmicrohttpd12 libnanomsg5 libnice10 \
@@ -57,7 +57,7 @@ case "$1" in
         DESKTOP_PACKAGE=""
         ;&
     *)
-        KVM_PACKAGE=""
+        KVM_PACKAGE="gpiod"
         ;;
 esac
 
@@ -88,8 +88,6 @@ deb ${MIRROR}/debian/ ${CODENAME}-updates main contrib non-free non-free-firmwar
         --customize-hook='cat "$1"/etc/default/u-boot' \
         --customize-hook='cp ./build/*.deb "$1/opt/" ' \
         --customize-hook='chroot "$1" sh -c "dpkg -i /opt/*.deb"' \
-        --customize-hook='chroot "$1" systemctl disable avahi-daemon.socket' \
-        --customize-hook='chroot "$1" systemctl disable avahi-daemon.service' \
         --customize-hook='cp overlay/etc/systemd/system/prekvm.service "$1/etc/systemd/system/"' \
         --customize-hook='chroot "$1" systemctl enable prekvm' \
         --customize-hook='chroot "$1" mkdir -p --mode=0755 /usr/share/keyrings' \
